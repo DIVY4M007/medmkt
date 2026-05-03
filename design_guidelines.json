@@ -1,0 +1,104 @@
+{
+  "theme": "LIGHT",
+  "archetype": "1_ORGANIC_EARTHY",
+  "typography": {
+    "heading_font": "Outfit",
+    "body_font": "Figtree",
+    "rules": [
+      "H1 up to text-5xl or text-6xl, tracking-tight.",
+      "Never use Inter for headings.",
+      "Overlines/labels must be uppercase, text-xs, tracking-[0.2em].",
+      "Body text should use leading-relaxed."
+    ]
+  },
+  "colors": {
+    "background": "#FDFBF7",
+    "surface": "#F4F1EA",
+    "surface_secondary": "#EAE5D9",
+    "border": "#D5CEBD",
+    "primary": "#4A675B",
+    "primary_hover": "#3D564C",
+    "accent": "#C47055",
+    "text_main": "#1F2321",
+    "text_muted": "#5C635F",
+    "status": {
+      "draft": "#9E9E9E",
+      "pending": "#D97706",
+      "approved": "#2563EB",
+      "paid": "#059669",
+      "delivered": "#4F46E5"
+    }
+  },
+  "layout_and_spacing": {
+    "spacing_scale": "p-1, p-2, p-4, p-6, p-8, p-12, p-16, p-24",
+    "container_padding": "p-8",
+    "grid_bento": "grid-cols-1 md:grid-cols-4 lg:grid-cols-12 gap-6",
+    "rules": [
+      "Use generous spacing philosophy. Multiply standard spacing by 1.5x.",
+      "Containers with borders must have internal padding (p-6 or p-8).",
+      "For dense data tables (pricing tiers), use 'Control Room' grid: gap-4, strict alignment.",
+      "Grid children must be direct children. Override stretch behavior with align-items: start."
+    ]
+  },
+  "components": {
+    "buttons": "Flat, pure primary color, text-white. No heavy shadow. 4px rounded radius (rounded-sm or rounded-md).",
+    "cards": "Cardless or max 8px border-radius (rounded-lg). Flat background, 1px subtle border, no shadow by default. On hover: shadow-lg, -translate-y-1.",
+    "tables": "Use Shadcn Table. No card wrap, use simple 1px border. Striped rows with surface_secondary for readability.",
+    "forms": "Use Shadcn forms. Inputs should have bg-transparent, 1px solid border, focus:ring-2 focus:ring-primary.",
+    "badges": "For order status, use soft background (10% opacity of status color) and bold text of status color. rounded-full."
+  },
+  "motion": {
+    "hover": "transition: transform 0.2s ease, opacity 0.2s ease",
+    "lists": "Staggered entrance animations using framer-motion."
+  },
+  "media": {
+    "rules": [
+      "Never use placeholder URLs. Use provided images.",
+      "Hero image max overlay opacity: bg-black/40 or bg-white/40."
+    ],
+    "image_urls": [
+      {
+        "category": "hero",
+        "description": "Hospital bed / medical facility for landing page hero.",
+        "url": "https://images.unsplash.com/photo-1710074213379-2a9c2653046a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NDh8MHwxfHNlYXJjaHwyfHxob3NwaXRhbCUyMGJlZHxlbnwwfHx8fDE3Nzc4NTE1MDh8MA&ixlib=rb-4.1.0&q=85"
+      },
+      {
+        "category": "product_consumables",
+        "description": "Pills/Tablets representing pharmacy medicines.",
+        "url": "https://images.unsplash.com/photo-1631980838946-755ba8443ab7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTV8MHwxfHNlYXJjaHwxfHxwaGFybWFjeSUyMG1lZGljaW5lc3xlbnwwfHx8fDE3Nzc4NTE1MDl8MA&ixlib=rb-4.1.0&q=85"
+      },
+      {
+        "category": "product_equipment",
+        "description": "Medical monitoring equipment / machines.",
+        "url": "https://images.unsplash.com/photo-1664902265139-934219cee42f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwyfHxzdXJnZXJ5JTIwdG9vbHN8ZW58MHx8fHwxNzc3ODUxNTA4fDA&ixlib=rb-4.1.0&q=85"
+      },
+      {
+        "category": "product_used_machines",
+        "description": "Used/Refurbished Hospital bed.",
+        "url": "https://images.pexels.com/photos/8410647/pexels-photo-8410647.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+      },
+      {
+        "category": "product_consumables_alt",
+        "description": "Surgical tools.",
+        "url": "https://images.unsplash.com/photo-1746842421936-461e16dd8238?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwxfHxzdXJnZXJ5JTIwdG9vbHN8ZW58MHx8fHwxNzc3ODUxNTA4fDA&ixlib=rb-4.1.0&q=85"
+      }
+    ]
+  },
+  "accessibility": {
+    "contrast": "Ensure text meets APCA standards. All interactive elements must include data-testid.",
+    "motion": "Respect prefers-reduced-motion."
+  },
+  "icons": {
+    "library": "lucide-react",
+    "style": "Use uniform icon weights, preferably stroke-width of 1.5 or 2 based on visual hierarchy."
+  },
+  "instructions_to_main_agent": [
+    "Build standard dashboard structure with Sidebar navigation and top header.",
+    "Implement Role-Based UI: Buyers see Marketplace and Cart. Sellers see Product Management and Order Approvals.",
+    "Use Shadcn UI for standard components but override default rounded radii (use rounded-md) and spacing.",
+    "Make tier pricing tables dense but legible using pure HTML/Tailwind tables or Shadcn Table.",
+    "Incorporate earthy, organic palette (Sage Green, Terracotta, Bone White) into dashboard elements.",
+    "Include 'data-testid' on all interactive elements (buttons, inputs, links).",
+    "Never use placeholder images, strictly use the provided image_urls for products."
+  ]
+}
