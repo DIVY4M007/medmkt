@@ -1,53 +1,62 @@
-import { useEffect } from "react";
-import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import './App.css';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './lib/auth';
+import RequireAuth from './lib/RequireAuth';
+import AppLayout from './components/AppLayout';
+import { Toaster } from './components/ui/sonner';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import DashboardPage from './pages/DashboardPage';
+import MarketplacePage from './pages/MarketplacePage';
+import ProductDetailPage from './pages/ProductDetailPage';
+import CartPage from './pages/CartPage';
+import OrdersPage from './pages/OrdersPage';
+import OrderDetailPage from './pages/OrderDetailPage';
+import SellerProductsPage from './pages/SellerProductsPage';
+import SellerProductFormPage from './pages/SellerProductFormPage';
+import TeamPage from './pages/TeamPage';
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
+function PublicLanding() {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  return user ? <Navigate to="/dashboard" replace /> : <LandingPage />;
+}
 
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
+function Protected({ children }) {
   return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
+    <RequireAuth>
+      <AppLayout>{children}</AppLayout>
+    </RequireAuth>
   );
-};
+}
 
 function App() {
   return (
-    <div className="App">
+    <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
+          <Route path="/" element={<PublicLanding />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+
+          <Route path="/dashboard" element={<Protected><DashboardPage /></Protected>} />
+          <Route path="/marketplace" element={<Protected><MarketplacePage /></Protected>} />
+          <Route path="/products/:id" element={<Protected><ProductDetailPage /></Protected>} />
+          <Route path="/cart" element={<Protected><CartPage /></Protected>} />
+          <Route path="/orders" element={<Protected><OrdersPage /></Protected>} />
+          <Route path="/orders/:id" element={<Protected><OrderDetailPage /></Protected>} />
+          <Route path="/seller/products" element={<Protected><SellerProductsPage /></Protected>} />
+          <Route path="/seller/products/new" element={<Protected><SellerProductFormPage /></Protected>} />
+          <Route path="/seller/products/:id/edit" element={<Protected><SellerProductFormPage /></Protected>} />
+          <Route path="/team" element={<Protected><TeamPage /></Protected>} />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
-    </div>
+      <Toaster richColors position="top-right" />
+    </AuthProvider>
   );
 }
 
