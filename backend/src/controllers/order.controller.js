@@ -1,6 +1,17 @@
 const Order = require('../models/Order');
 const { z, validate } = require('../utils/validators');
 
+// Helper: re-fetch an order with the same populate chain getOrder uses, so state-transition
+// endpoints return a fully populated document the frontend can rely on.
+async function populated(orderId) {
+  return Order.findById(orderId)
+    .populate('buyerOrg', 'name type')
+    .populate('createdBy', 'name email')
+    .populate('approvedBy', 'name email')
+    .populate('items.product')
+    .populate('items.sellerOrg', 'name type');
+}
+
 // GET /api/orders — list orders relevant to my org. ?view=buyer|seller
 async function listOrders(req, res, next) {
   try {
@@ -57,7 +68,7 @@ async function approveOrder(req, res, next) {
     o.approvedBy = req.user._id;
     o.approvedAt = new Date();
     await o.save();
-    res.json({ order: o });
+    res.json({ order: await populated(o._id) });
   } catch (err) {
     next(err);
   }
@@ -74,7 +85,7 @@ async function rejectOrder(req, res, next) {
     o.rejectionReason = req.body.reason;
     o.rejectedAt = new Date();
     await o.save();
-    res.json({ order: o });
+    res.json({ order: await populated(o._id) });
   } catch (err) {
     next(err);
   }
@@ -90,7 +101,7 @@ async function payOrder(req, res, next) {
     o.status = 'paid';
     o.paidAt = new Date();
     await o.save();
-    res.json({ order: o });
+    res.json({ order: await populated(o._id) });
   } catch (err) {
     next(err);
   }
@@ -107,7 +118,7 @@ async function deliverOrder(req, res, next) {
     o.status = 'delivered';
     o.deliveredAt = new Date();
     await o.save();
-    res.json({ order: o });
+    res.json({ order: await populated(o._id) });
   } catch (err) {
     next(err);
   }

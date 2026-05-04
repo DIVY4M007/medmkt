@@ -101,7 +101,8 @@ async function removeItem(req, res, next) {
     item.deleteOne();
     cart.recalcTotal();
     await cart.save();
-    res.json({ cart });
+    const populated = await Order.findById(cart._id).populate('items.product').populate('items.sellerOrg', 'name type');
+    res.json({ cart: populated });
   } catch (err) {
     next(err);
   }

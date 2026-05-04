@@ -26,13 +26,20 @@ export default function OrderDetailPage() {
   const isBuyerOrg = user?.organization?._id === order.buyerOrg?._id;
   const isSellerOrg = order.items.some((it) => it.sellerOrg && (it.sellerOrg._id === user?.organization?._id));
 
+  const ACTION_TOAST = {
+    approve: 'Order approved',
+    pay: 'Order marked as paid',
+    deliver: 'Order marked as delivered',
+    reject: 'Order rejected',
+  };
+
   const act = async (action) => {
     setBusy(true);
     try {
       const body = action === 'reject' ? { reason: 'Not approved' } : {};
       const { data } = await api.post(`/orders/${id}/${action}`, body);
       setOrder(data.order);
-      toast.success(`Order ${action}ed`);
+      toast.success(ACTION_TOAST[action] || 'Order updated');
     } catch (err) {
       toast.error(err?.response?.data?.error || `Could not ${action}`);
     } finally {
