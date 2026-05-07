@@ -5,7 +5,7 @@ Production-ready B2B healthcare marketplace. Multi-org platform (hospital, pharm
 
 ## User choices (Feb 2026)
 - Backend: Node.js + Express
-- File storage: deferred (Emergent object storage available later)
+- File storage: deferred (object storage available later)
 - Auth: JWT, email/password
 - Payments: mocked
 - Scope: Core MVP + seed data
@@ -39,7 +39,7 @@ Production-ready B2B healthcare marketplace. Multi-org platform (hospital, pharm
 - Toast copy fixed (no more "approveed"/"payed")
 
 ## Backlog (P1)
-- File uploads via Emergent object storage for product images
+- File uploads via object storage for product images
 - Detailed used-equipment listing flow (separate `/list/used`)
 - Pagination on marketplace + orders
 - Order export CSV
