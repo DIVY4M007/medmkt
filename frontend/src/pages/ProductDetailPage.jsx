@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../lib/api';
 import { useAuth } from '../lib/auth';
-import { CATEGORY_LABELS, formatCurrency, priceForQty, STERILITY_LABELS } from '../lib/format';
+import { CATEGORY_LABELS, formatINR, priceForQty, STERILITY_LABELS } from '../lib/format';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { ChevronLeft, ShoppingCart, ShieldCheck, Recycle } from 'lucide-react';
@@ -103,7 +103,7 @@ export default function ProductDetailPage() {
                   return (
                     <tr key={i} className={i % 2 ? 'bg-[#F4F1EA]/40' : ''}>
                       <td className="px-4 py-2.5">{t.minQty}+</td>
-                      <td className="px-4 py-2.5 text-right font-heading">{formatCurrency(t.unitPrice)}</td>
+                      <td className="px-4 py-2.5 text-right font-heading">{formatINR(t.unitPrice)}</td>
                       <td className="px-4 py-2.5 text-right text-[#C47055]">{pct > 0 ? `−${pct}%` : '—'}</td>
                     </tr>
                   );
@@ -146,11 +146,11 @@ export default function ProductDetailPage() {
               </div>
               <div>
                 <div className="label-overline text-[#5C635F]">Unit price</div>
-                <div className="font-heading text-2xl font-semibold text-[#4A675B]" data-testid="unit-price">{formatCurrency(unitPrice)}</div>
+                <div className="font-heading text-2xl font-semibold text-[#4A675B]" data-testid="unit-price">{formatINR(unitPrice)}</div>
               </div>
               <div>
                 <div className="label-overline text-[#5C635F]">Line total</div>
-                <div className="font-heading text-2xl font-semibold" data-testid="line-total">{formatCurrency(lineTotal)}</div>
+                <div className="font-heading text-2xl font-semibold" data-testid="line-total">{formatINR(lineTotal)}</div>
               </div>
               <div className="ml-auto">
                 <Button

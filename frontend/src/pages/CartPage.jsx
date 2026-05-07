@@ -4,7 +4,7 @@ import api from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { formatCurrency } from '../lib/format';
+import { formatINR } from '../lib/format';
 import { Trash2, Send, ShoppingBag } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -94,8 +94,8 @@ export default function CartPage() {
                       data-testid={`cart-qty-${it._id}`}
                       className="w-20 text-center mx-auto border-[#D5CEBD]" />
                   </td>
-                  <td className="px-4 py-4 text-right">{formatCurrency(it.unitPrice)}</td>
-                  <td className="px-4 py-4 text-right font-heading">{formatCurrency(it.lineTotal)}</td>
+                  <td className="px-4 py-4 text-right">{formatINR(it.unitPrice)}</td>
+                  <td className="px-4 py-4 text-right font-heading">{formatINR(it.lineTotal)}</td>
                   <td className="px-4 py-4 text-right">
                     <button onClick={() => removeItem(it._id)} data-testid={`cart-remove-${it._id}`}
                       className="text-[#5C635F] hover:text-red-600 transition-colors">
@@ -108,7 +108,7 @@ export default function CartPage() {
             <tfoot>
               <tr className="bg-[#F4F1EA] border-t border-[#D5CEBD]">
                 <td colSpan={4} className="px-4 py-4 text-right font-medium">Order total</td>
-                <td className="px-4 py-4 text-right font-heading text-xl text-[#4A675B]" data-testid="cart-total">{formatCurrency(cart.total)}</td>
+                <td className="px-4 py-4 text-right font-heading text-xl text-[#4A675B]" data-testid="cart-total">{formatINR(cart.total)}</td>
                 <td></td>
               </tr>
             </tfoot>

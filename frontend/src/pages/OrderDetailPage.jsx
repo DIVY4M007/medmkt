@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { useAuth } from '../lib/auth';
 import StatusBadge from '../components/StatusBadge';
-import { formatCurrency, formatDate, STATUS_FLOW } from '../lib/format';
+import { formatINR, formatDate, STATUS_FLOW } from '../lib/format';
 import { Button } from '../components/ui/button';
 import { ChevronLeft, Check, X, CreditCard, Truck } from 'lucide-react';
 import { toast } from 'sonner';
@@ -103,15 +103,15 @@ export default function OrderDetailPage() {
                 <td className="px-4 py-3">{it.productName}</td>
                 <td className="px-4 py-3 text-[#5C635F]">{it.sellerOrg?.name || '—'}</td>
                 <td className="px-4 py-3 text-right">{it.quantity}</td>
-                <td className="px-4 py-3 text-right">{formatCurrency(it.unitPrice)}</td>
-                <td className="px-4 py-3 text-right font-heading">{formatCurrency(it.lineTotal)}</td>
+                <td className="px-4 py-3 text-right">{formatINR(it.unitPrice)}</td>
+                <td className="px-4 py-3 text-right font-heading">{formatINR(it.lineTotal)}</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
             <tr className="bg-[#F4F1EA]">
               <td colSpan={4} className="px-4 py-3 text-right font-medium">Order total</td>
-              <td className="px-4 py-3 text-right font-heading text-xl text-[#4A675B]" data-testid="order-total">{formatCurrency(order.total)}</td>
+              <td className="px-4 py-3 text-right font-heading text-xl text-[#4A675B]" data-testid="order-total">{formatINR(order.total)}</td>
             </tr>
           </tfoot>
         </table>

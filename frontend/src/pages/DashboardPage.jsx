@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import api from '../lib/api';
 import StatusBadge from '../components/StatusBadge';
-import { formatCurrency, formatDate, STATUS_FLOW } from '../lib/format';
+import { formatINR, formatDate, STATUS_FLOW } from '../lib/format';
 import { Store, ShoppingCart, Package, Users, ArrowRight } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -138,7 +138,7 @@ const OrderRow = ({ order }) => (
       <div className="text-xs text-[#5C635F]">{formatDate(order.createdAt)} · {order.items.length} item(s)</div>
     </div>
     <div className="flex items-center gap-3">
-      <span className="font-heading text-sm">{formatCurrency(order.total)}</span>
+      <span className="font-heading text-sm">{formatINR(order.total)}</span>
       <StatusBadge status={order.status} />
     </div>
   </Link>

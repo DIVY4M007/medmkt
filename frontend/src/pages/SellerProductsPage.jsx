@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../lib/api';
 import { Button } from '../components/ui/button';
-import { CATEGORY_LABELS, formatCurrency } from '../lib/format';
+import { CATEGORY_LABELS, formatINR } from '../lib/format';
 import { Plus } from 'lucide-react';
 
 export default function SellerProductsPage() {
@@ -55,7 +55,7 @@ export default function SellerProductsPage() {
                   <td className="px-4 py-3 font-medium">{p.name}</td>
                   <td className="px-4 py-3 text-[#5C635F]">{CATEGORY_LABELS[p.category]}</td>
                   <td className="px-4 py-3 text-right">{p.tierPricing?.length || 0}</td>
-                  <td className="px-4 py-3 text-right font-heading">{formatCurrency(p.tierPricing?.[0]?.unitPrice || 0)}</td>
+                  <td className="px-4 py-3 text-right font-heading">{formatINR(p.tierPricing?.[0]?.unitPrice || 0)}</td>
                   <td className="px-4 py-3 text-right">{p.stock}</td>
                   <td className="px-4 py-3 text-right">
                     <Link to={`/seller/products/${p._id}/edit`} className="text-xs text-[#4A675B] hover:underline" data-testid={`edit-product-${p._id}`}>Edit</Link>

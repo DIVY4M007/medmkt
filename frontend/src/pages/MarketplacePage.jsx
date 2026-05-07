@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../lib/api';
-import { CATEGORY_LABELS, CATEGORY_OPTIONS, formatCurrency, priceForQty, STERILITY_LABELS } from '../lib/format';
+import { CATEGORY_LABELS, CATEGORY_OPTIONS, formatINR, priceForQty, STERILITY_LABELS } from '../lib/format';
 import { Input } from '../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Search, ShieldCheck } from 'lucide-react';
@@ -120,11 +120,11 @@ function ProductCard({ product }) {
         </div>
         <div className="mt-auto pt-3 border-t border-[#D5CEBD] flex items-baseline justify-between">
           <div>
-            <div className="font-heading text-lg font-semibold text-[#4A675B]">{formatCurrency(startPrice)}</div>
+            <div className="font-heading text-lg font-semibold text-[#4A675B]">{formatINR(startPrice)}</div>
             <div className="text-[10px] uppercase tracking-[0.2em] text-[#5C635F]">From / per {product.unit}</div>
           </div>
           {bestPrice < startPrice && (
-            <div className="text-xs text-[#C47055]">as low as {formatCurrency(bestPrice)}</div>
+            <div className="text-xs text-[#C47055]">as low as {formatINR(bestPrice)}</div>
           )}
         </div>
       </div>

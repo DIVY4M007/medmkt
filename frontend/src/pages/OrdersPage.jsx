@@ -3,7 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import api from '../lib/api';
 import { useAuth } from '../lib/auth';
 import StatusBadge from '../components/StatusBadge';
-import { formatCurrency, formatDate } from '../lib/format';
+import { formatINR, formatDate } from '../lib/format';
 
 export default function OrdersPage() {
   const { user } = useAuth();
@@ -85,7 +85,7 @@ export default function OrdersPage() {
                   </td>
                   <td className="px-4 py-4"><StatusBadge status={o.status} /></td>
                   <td className="px-4 py-4 text-right">{o.items.length}</td>
-                  <td className="px-4 py-4 text-right font-heading">{formatCurrency(o.total)}</td>
+                  <td className="px-4 py-4 text-right font-heading">{formatINR(o.total)}</td>
                   <td className="px-4 py-4 text-right text-[#5C635F]">{formatDate(o.createdAt)}</td>
                 </tr>
               ))}

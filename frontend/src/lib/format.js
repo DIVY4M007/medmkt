@@ -22,7 +22,6 @@ export const CATEGORY_LABELS = {
   disposable_caps: 'Disposable Caps',
 };
 
-// Ordered list for selects
 export const CATEGORY_OPTIONS = Object.entries(CATEGORY_LABELS).map(([value, label]) => ({ value, label }));
 
 export const STERILITY_LABELS = {
@@ -41,10 +40,29 @@ export const STATUS_LABELS = {
 
 export const STATUS_FLOW = ['draft', 'pending_approval', 'approved', 'paid', 'delivered'];
 
-export function formatCurrency(n) {
-  if (n == null || isNaN(n)) return '—';
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+// ─── Currency ───────────────────────────────────────────────────────────────
+// Backend stores raw numeric values; all currency formatting happens here.
+// Uses Indian numbering system (lakhs, crores) and the ₹ symbol natively.
+//
+// Examples:
+//   formatINR(1250)      → "₹1,250"
+//   formatINR(1250000)   → "₹12,50,000"
+//   formatINR(3.5)       → "₹3.50"
+//   formatINR(null)      → "—"
+export function formatINR(amount) {
+  if (amount == null || isNaN(amount)) return '—';
+  const n = Number(amount);
+  const isInt = Number.isInteger(n);
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: isInt ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(n);
 }
+
+// Back-compat alias — older code paths can keep calling formatCurrency.
+export const formatCurrency = formatINR;
 
 export function priceForQty(tiers, qty) {
   if (!Array.isArray(tiers) || tiers.length === 0) return 0;
@@ -56,5 +74,5 @@ export function priceForQty(tiers, qty) {
 
 export function formatDate(d) {
   if (!d) return '—';
-  return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' });
 }
