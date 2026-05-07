@@ -9,7 +9,7 @@ export function AuthProvider({ children }) {
   });
   const [loading, setLoading] = useState(true);
 
-  // verify token on mount
+  // Verify token on mount
   useEffect(() => {
     const token = localStorage.getItem('hm_token');
     if (!token) { setLoading(false); return; }
@@ -19,16 +19,17 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const login = useCallback(async (email, password) => {
-    const { data } = await api.post('/auth/login', { email, password });
+  // Portal-aware login: hits /api/auth/{buyer|seller}/login.
+  const loginWithPortal = useCallback(async (accountType, email, password) => {
+    const { data } = await api.post(`/auth/${accountType}/login`, { email, password });
     localStorage.setItem('hm_token', data.token);
     localStorage.setItem('hm_user', JSON.stringify(data.user));
     setUser(data.user);
     return data.user;
   }, []);
 
-  const register = useCallback(async (payload) => {
-    const { data } = await api.post('/auth/register', payload);
+  const registerWithPortal = useCallback(async (accountType, payload) => {
+    const { data } = await api.post(`/auth/${accountType}/register`, payload);
     localStorage.setItem('hm_token', data.token);
     localStorage.setItem('hm_user', JSON.stringify(data.user));
     setUser(data.user);
@@ -42,7 +43,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthCtx.Provider value={{ user, loading, login, register, logout }}>
+    <AuthCtx.Provider value={{ user, loading, loginWithPortal, registerWithPortal, logout }}>
       {children}
     </AuthCtx.Provider>
   );

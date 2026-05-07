@@ -24,23 +24,23 @@ async function runSeed() {
   const password = await bcrypt.hash('Password123!', 10);
 
   const [hospital, pharmacy, vendor, distributor] = await Organization.insertMany([
-    { name: 'Northwind General Hospital', type: 'hospital', address: 'Boston, MA', isBuyer: true, isSeller: false },
-    { name: 'BlueCross Pharmacy', type: 'pharmacy', address: 'New York, NY', isBuyer: true, isSeller: true },
-    { name: 'MedSupply Vendors Inc.', type: 'vendor', address: 'Chicago, IL', isBuyer: false, isSeller: true },
-    { name: 'PrimeHealth Distributors', type: 'distributor', address: 'San Francisco, CA', isBuyer: true, isSeller: true },
+    { name: 'Northwind General Hospital', type: 'hospital', accountType: 'buyer', address: 'Boston, MA' },
+    { name: 'BlueCross Pharmacy', type: 'pharmacy', accountType: 'buyer', address: 'New York, NY' },
+    { name: 'MedSupply Vendors Inc.', type: 'vendor', accountType: 'seller', address: 'Chicago, IL' },
+    { name: 'PrimeHealth Distributors', type: 'distributor', accountType: 'seller', address: 'San Francisco, CA' },
   ]);
 
   await User.insertMany([
     // Hospital — buyer flow
-    { name: 'Alice Approver', email: 'alice@hospital.com', passwordHash: password, organization: hospital._id, role: 'approver' },
-    { name: 'Bob Requestor', email: 'bob@hospital.com', passwordHash: password, organization: hospital._id, role: 'requestor' },
-    // Pharmacy — both
-    { name: 'Carol Approver', email: 'carol@pharmacy.com', passwordHash: password, organization: pharmacy._id, role: 'approver' },
-    { name: 'Dan Requestor', email: 'dan@pharmacy.com', passwordHash: password, organization: pharmacy._id, role: 'requestor' },
+    { name: 'Alice Approver', email: 'alice@hospital.com', passwordHash: password, organization: hospital._id, accountType: 'buyer', role: 'approver' },
+    { name: 'Bob Requestor', email: 'bob@hospital.com', passwordHash: password, organization: hospital._id, accountType: 'buyer', role: 'requestor' },
+    // Pharmacy — buyer
+    { name: 'Carol Approver', email: 'carol@pharmacy.com', passwordHash: password, organization: pharmacy._id, accountType: 'buyer', role: 'approver' },
+    { name: 'Dan Requestor', email: 'dan@pharmacy.com', passwordHash: password, organization: pharmacy._id, accountType: 'buyer', role: 'requestor' },
     // Vendor — seller
-    { name: 'Eve Vendor', email: 'eve@vendor.com', passwordHash: password, organization: vendor._id, role: 'approver' },
-    // Distributor — seller + buyer
-    { name: 'Frank Distributor', email: 'frank@distributor.com', passwordHash: password, organization: distributor._id, role: 'approver' },
+    { name: 'Eve Vendor', email: 'eve@vendor.com', passwordHash: password, organization: vendor._id, accountType: 'seller', role: 'approver' },
+    // Distributor — seller
+    { name: 'Frank Distributor', email: 'frank@distributor.com', passwordHash: password, organization: distributor._id, accountType: 'seller', role: 'approver' },
   ]);
 
   await Product.insertMany([
@@ -48,7 +48,7 @@ async function runSeed() {
       name: 'Paracetamol 500mg (100 tablets)',
       description: 'Analgesic and antipyretic. Box of 100 tablets, blister-packed.',
       category: 'medicines',
-      sellerOrg: pharmacy._id,
+      sellerOrg: distributor._id,
       imageUrl: PILLS,
       stock: 5000,
       unit: 'box',
@@ -63,7 +63,7 @@ async function runSeed() {
       name: 'Amoxicillin 250mg (Bottle of 60)',
       description: 'Broad-spectrum antibiotic, suspension form.',
       category: 'medicines',
-      sellerOrg: pharmacy._id,
+      sellerOrg: distributor._id,
       imageUrl: PILLS,
       stock: 1200,
       unit: 'bottle',

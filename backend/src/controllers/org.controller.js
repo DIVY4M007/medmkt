@@ -25,7 +25,8 @@ const inviteSchema = z.object({
   role: z.enum(['requestor', 'approver']),
 });
 
-// POST /api/orgs/me/users — add a user to the current org (approvers only)
+// POST /api/orgs/me/users — add a user to the current org (approvers only).
+// New user inherits the org's accountType automatically.
 async function inviteUser(req, res, next) {
   try {
     const { name, email, password, role } = req.body;
@@ -37,6 +38,7 @@ async function inviteUser(req, res, next) {
       email: email.toLowerCase(),
       passwordHash,
       organization: req.org._id,
+      accountType: req.org.accountType,
       role,
     });
     res.status(201).json({ user: user.toSafeJSON() });
@@ -45,10 +47,10 @@ async function inviteUser(req, res, next) {
   }
 }
 
-// GET /api/orgs/sellers — list all seller orgs (for marketplace)
+// GET /api/orgs/sellers — list all seller orgs (for marketplace filters)
 async function listSellerOrgs(_req, res, next) {
   try {
-    const orgs = await Organization.find({ isSeller: true });
+    const orgs = await Organization.find({ accountType: 'seller' });
     res.json({ organizations: orgs });
   } catch (err) {
     next(err);
