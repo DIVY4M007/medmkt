@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../lib/api';
 import { useAuth } from '../lib/auth';
-import { CATEGORY_LABELS, formatCurrency, priceForQty } from '../lib/format';
+import { CATEGORY_LABELS, formatCurrency, priceForQty, STERILITY_LABELS } from '../lib/format';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { ChevronLeft, ShoppingCart, ShieldCheck } from 'lucide-react';
+import { ChevronLeft, ShoppingCart, ShieldCheck, Recycle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ProductDetailPage() {
@@ -26,7 +26,7 @@ export default function ProductDetailPage() {
   if (!product) return <div className="p-12 text-[#5C635F]" data-testid="product-loading">Loading…</div>;
 
   const ownProduct = user?.organization?._id === product.sellerOrg?._id;
-  const canAddToCart = user?.role === 'requestor' && !ownProduct;
+  const canAddToCart = user?.accountType === 'buyer' && user?.role === 'requestor' && !ownProduct;
 
   const unitPrice = priceForQty(product.tierPricing, qty);
   const lineTotal = unitPrice * qty;
@@ -45,6 +45,7 @@ export default function ProductDetailPage() {
   };
 
   const meta = product.qualityMetadata || {};
+  const certs = meta.certifications || [];
 
   return (
     <div className="p-8 lg:p-12 max-w-6xl mx-auto" data-testid="product-detail-page">
@@ -60,9 +61,24 @@ export default function ProductDetailPage() {
         </div>
 
         <div className="lg:col-span-6">
-          <div className="label-overline text-[#5C635F] mb-2">{CATEGORY_LABELS[product.category]}</div>
+          <div className="label-overline text-[#5C635F] mb-2">{CATEGORY_LABELS[product.category] || product.category}</div>
           <h1 className="font-heading text-3xl lg:text-4xl font-semibold leading-tight" data-testid="product-name">{product.name}</h1>
-          <div className="text-sm text-[#5C635F] mt-2">Sold by <span className="font-medium text-[#1F2321]">{product.sellerOrg?.name}</span> · {product.sellerOrg?.type}</div>
+          <div className="text-sm text-[#5C635F] mt-2">
+            Sold by <span className="font-medium text-[#1F2321]">{product.sellerOrg?.name}</span> · {product.sellerOrg?.type}
+          </div>
+          {/* Status chips */}
+          <div className="flex flex-wrap gap-2 mt-4">
+            {product.sterility === 'sterile' && (
+              <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-[#4A675B]/10 text-[#4A675B] font-medium">
+                <ShieldCheck className="h-3 w-3" /> Sterile
+              </span>
+            )}
+            {product.disposable && (
+              <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-[#C47055]/10 text-[#C47055] font-medium">
+                <Recycle className="h-3 w-3" /> Disposable
+              </span>
+            )}
+          </div>
 
           <p className="text-[#1F2321] leading-relaxed mt-6">{product.description}</p>
 
@@ -96,38 +112,28 @@ export default function ProductDetailPage() {
             </table>
           </div>
 
-          {/* Quality metadata */}
-          {(meta.material || meta.plasticGrade || (meta.certifications && meta.certifications.length)) && (
-            <div className="mt-8 border border-[#D5CEBD] rounded-md p-5 bg-[#FDFBF7]">
-              <div className="label-overline text-[#5C635F] mb-3 flex items-center gap-2">
-                <ShieldCheck className="h-3.5 w-3.5" /> Quality metadata
-              </div>
-              <dl className="grid grid-cols-2 gap-3 text-sm">
-                {meta.material && (<><dt className="text-[#5C635F]">Material</dt><dd>{meta.material}</dd></>)}
-                {meta.plasticGrade && (<><dt className="text-[#5C635F]">Grade</dt><dd>{meta.plasticGrade}</dd></>)}
-                {meta.certifications?.length > 0 && (
-                  <><dt className="text-[#5C635F]">Certifications</dt>
-                    <dd className="flex flex-wrap gap-1.5">
-                      {meta.certifications.map((c) => (
-                        <span key={c} className="text-xs px-2 py-0.5 rounded-full bg-[#4A675B]/10 text-[#4A675B] font-medium">{c}</span>
-                      ))}
-                    </dd></>
-                )}
-              </dl>
-            </div>
-          )}
-
-          {/* Used equipment specifics */}
-          {product.isUsed && (
-            <div className="mt-6 border border-[#C47055]/30 bg-[#C47055]/5 rounded-md p-5">
-              <div className="label-overline text-[#C47055] mb-2">Used / Refurbished</div>
-              <dl className="grid grid-cols-2 gap-3 text-sm">
-                <dt className="text-[#5C635F]">Condition</dt><dd className="capitalize">{product.condition?.replace('_', ' ')}</dd>
-                {product.yearOfManufacture && (<><dt className="text-[#5C635F]">Year</dt><dd>{product.yearOfManufacture}</dd></>)}
-                {product.usageDetails && (<><dt className="text-[#5C635F]">Usage details</dt><dd>{product.usageDetails}</dd></>)}
-              </dl>
-            </div>
-          )}
+          {/* Specifications */}
+          <div className="mt-8 border border-[#D5CEBD] rounded-md p-5 bg-[#FDFBF7]">
+            <div className="label-overline text-[#5C635F] mb-3">Specifications</div>
+            <dl className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm">
+              <dt className="text-[#5C635F]">Sterility</dt><dd>{STERILITY_LABELS[product.sterility]}</dd>
+              <dt className="text-[#5C635F]">Use</dt><dd>{product.disposable ? 'Disposable' : 'Reusable'}</dd>
+              <dt className="text-[#5C635F]">Packaging qty</dt><dd>{product.packagingQty} per {product.unit}</dd>
+              {product.manufacturer && (<><dt className="text-[#5C635F]">Manufacturer</dt><dd>{product.manufacturer}</dd></>)}
+              {meta.material && (<><dt className="text-[#5C635F]">Material</dt><dd>{meta.material}</dd></>)}
+              {meta.plasticGrade && (<><dt className="text-[#5C635F]">Grade</dt><dd>{meta.plasticGrade}</dd></>)}
+              {certs.length > 0 && (
+                <>
+                  <dt className="text-[#5C635F]">Certifications</dt>
+                  <dd className="flex flex-wrap gap-1.5">
+                    {certs.map((c) => (
+                      <span key={c} className="text-xs px-2 py-0.5 rounded-full bg-[#4A675B]/10 text-[#4A675B] font-medium">{c}</span>
+                    ))}
+                  </dd>
+                </>
+              )}
+            </dl>
+          </div>
 
           {/* Cart actions */}
           <div className="mt-8 border border-[#D5CEBD] rounded-md p-5 bg-[#F4F1EA]">
@@ -157,7 +163,11 @@ export default function ProductDetailPage() {
                 </Button>
                 {!canAddToCart && (
                   <div className="text-xs text-[#5C635F] mt-1.5">
-                    {ownProduct ? 'Your own product' : 'Only requestors can add to cart'}
+                    {ownProduct
+                      ? 'Your own product'
+                      : user?.accountType !== 'buyer'
+                        ? 'Buyers only'
+                        : 'Only requestors can add to cart'}
                   </div>
                 )}
               </div>

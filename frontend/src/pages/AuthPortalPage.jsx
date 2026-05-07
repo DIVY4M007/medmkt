@@ -41,7 +41,7 @@ export default function AuthPortalPage({ mode }) {
               icon={ShoppingCart}
               title="I'm a Buyer"
               subtitle="Hospitals · Pharmacies"
-              body="Procure medicines, consumables and equipment. Build carts, get them approved, track delivery."
+              body="Procure medical consumables — syringes, gloves, PPE, IV sets, gauze and more. Build carts, get them approved, track delivery."
               cta={isLogin ? 'Sign in as buyer' : 'Register as buyer'}
               to={isLogin ? '/buyer/login' : '/buyer/register'}
             />

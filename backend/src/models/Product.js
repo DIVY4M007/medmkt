@@ -1,7 +1,31 @@
 const mongoose = require('mongoose');
 
-const CATEGORIES = ['medicines', 'consumables', 'equipment', 'used_equipment'];
-const CONDITIONS = ['like_new', 'good', 'fair', 'refurbished'];
+// Consumables marketplace — single domain. The `category` field below replaces the
+// previous broad enum (medicines / consumables / equipment / used_equipment).
+const CATEGORIES = [
+  'syringes',
+  'gloves',
+  'cotton',
+  'bandages',
+  'surgical_masks',
+  'iv_sets',
+  'gauze',
+  'catheters',
+  'ppe_kits',
+  'disposable_drapes',
+  'alcohol_swabs',
+  'specimen_containers',
+  'surgical_tape',
+  'cannulas',
+  'urine_bags',
+  'disposable_gowns',
+  'face_shields',
+  'shoe_covers',
+  'hand_sanitizers',
+  'disposable_caps',
+];
+
+const STERILITY = ['sterile', 'non_sterile'];
 
 const tierSchema = new mongoose.Schema(
   {
@@ -15,25 +39,28 @@ const productSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
     description: { type: String, default: '' },
-    category: { type: String, enum: CATEGORIES, required: true },
+    category: { type: String, enum: CATEGORIES, required: true, index: true },
     sellerOrg: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization', required: true },
     imageUrl: { type: String, default: '' },
     stock: { type: Number, default: 100, min: 0 },
-    unit: { type: String, default: 'unit' }, // e.g. box, vial, piece
+    unit: { type: String, default: 'box' },
+
     // Tier pricing — sorted ascending by minQty in middleware
     tierPricing: { type: [tierSchema], default: [] },
-    // Structured quality metadata (free-form key/value)
+
+    // Consumable-specific structured attributes
+    sterility: { type: String, enum: STERILITY, default: 'non_sterile' },
+    disposable: { type: Boolean, default: true }, // disposable vs reusable
+    packagingQty: { type: Number, default: 1, min: 1 }, // pieces per pack/box
+    manufacturer: { type: String, default: '' },
+
+    // Quality metadata (free-form material spec + cert list)
     qualityMetadata: {
       material: { type: String, default: '' },
       plasticGrade: { type: String, default: '' },
       certifications: { type: [String], default: [] },
-      extra: { type: Map, of: String, default: {} },
     },
-    // Used / refurbished specifics
-    isUsed: { type: Boolean, default: false },
-    condition: { type: String, enum: CONDITIONS, default: undefined },
-    usageDetails: { type: String, default: '' }, // hours used, year, etc.
-    yearOfManufacture: { type: Number },
+
     isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
@@ -42,10 +69,6 @@ const productSchema = new mongoose.Schema(
 productSchema.pre('save', function (next) {
   if (Array.isArray(this.tierPricing)) {
     this.tierPricing.sort((a, b) => a.minQty - b.minQty);
-  }
-  // Used products must be in the used_equipment category
-  if (this.isUsed && this.category !== 'used_equipment') {
-    this.category = 'used_equipment';
   }
   next();
 });
@@ -63,4 +86,4 @@ productSchema.statics.priceForQty = function (tiers, qty) {
 
 module.exports = mongoose.model('Product', productSchema);
 module.exports.CATEGORIES = CATEGORIES;
-module.exports.CONDITIONS = CONDITIONS;
+module.exports.STERILITY = STERILITY;

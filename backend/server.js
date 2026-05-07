@@ -51,6 +51,8 @@ const HOST = process.env.HOST || '0.0.0.0';
     await connectDB();
     // Migration-safe: backfill accountType on pre-existing orgs/users.
     await require('./src/migrations/backfillAccountType').backfillAccountTypes();
+    // Migration: prune legacy non-consumable products from previous catalogue versions.
+    await require('./src/migrations/pruneNonConsumables').pruneNonConsumables();
     // Auto-seed on first start when DB is empty
     await require('./src/seeders/seed').autoSeedIfEmpty();
     app.listen(PORT, HOST, () => {

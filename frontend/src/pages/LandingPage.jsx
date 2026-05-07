@@ -82,7 +82,7 @@ export default function LandingPage() {
           <Feature icon={ShieldCheck} title="Role-based approvals"
             body="Requestors propose, approvers commit. Every state change is logged and attributable." />
           <Feature icon={BadgeCheck} title="Quality metadata"
-            body="Capture material grade, plastic type, certifications, used-equipment condition — all structured." />
+            body="Capture material, plastic grade, sterility, certifications and packaging — all structured." />
         </div>
       </section>
 

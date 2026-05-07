@@ -1,9 +1,33 @@
 // Display helpers for categories, statuses, currency
 export const CATEGORY_LABELS = {
-  medicines: 'Medicines',
-  consumables: 'Consumables',
-  equipment: 'Medical Equipment',
-  used_equipment: 'Used / Refurbished',
+  syringes: 'Syringes',
+  gloves: 'Gloves',
+  cotton: 'Cotton',
+  bandages: 'Bandages',
+  surgical_masks: 'Surgical Masks',
+  iv_sets: 'IV Sets',
+  gauze: 'Gauze',
+  catheters: 'Catheters',
+  ppe_kits: 'PPE Kits',
+  disposable_drapes: 'Disposable Drapes',
+  alcohol_swabs: 'Alcohol Swabs',
+  specimen_containers: 'Specimen Containers',
+  surgical_tape: 'Surgical Tape',
+  cannulas: 'Cannulas',
+  urine_bags: 'Urine Bags',
+  disposable_gowns: 'Disposable Gowns',
+  face_shields: 'Face Shields',
+  shoe_covers: 'Shoe Covers',
+  hand_sanitizers: 'Hand Sanitizers',
+  disposable_caps: 'Disposable Caps',
+};
+
+// Ordered list for selects
+export const CATEGORY_OPTIONS = Object.entries(CATEGORY_LABELS).map(([value, label]) => ({ value, label }));
+
+export const STERILITY_LABELS = {
+  sterile: 'Sterile',
+  non_sterile: 'Non-sterile',
 };
 
 export const STATUS_LABELS = {

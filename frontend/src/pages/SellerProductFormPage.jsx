@@ -7,28 +7,23 @@ import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Switch } from '../components/ui/switch';
+import { CATEGORY_OPTIONS } from '../lib/format';
 import { Trash2, Plus, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
-const CATEGORIES = [
-  { value: 'medicines', label: 'Medicines' },
-  { value: 'consumables', label: 'Consumables' },
-  { value: 'equipment', label: 'Medical Equipment' },
-  { value: 'used_equipment', label: 'Used / Refurbished' },
-];
-const CONDITIONS = [
-  { value: 'like_new', label: 'Like new' },
-  { value: 'good', label: 'Good' },
-  { value: 'fair', label: 'Fair' },
-  { value: 'refurbished', label: 'Refurbished' },
-];
-
 const empty = {
-  name: '', description: '', category: 'consumables', imageUrl: '',
-  stock: 100, unit: 'unit',
+  name: '',
+  description: '',
+  category: CATEGORY_OPTIONS[0].value,
+  imageUrl: '',
+  stock: 100,
+  unit: 'box',
   tierPricing: [{ minQty: 1, unitPrice: 10 }],
+  sterility: 'non_sterile',
+  disposable: true,
+  packagingQty: 1,
+  manufacturer: '',
   qualityMetadata: { material: '', plasticGrade: '', certifications: [] },
-  isUsed: false, condition: undefined, usageDetails: '', yearOfManufacture: undefined,
 };
 
 export default function SellerProductFormPage() {
@@ -44,9 +39,13 @@ export default function SellerProductFormPage() {
     api.get(`/products/${id}`).then(({ data }) => {
       const p = data.product;
       setForm({
-        ...empty, ...p,
-        qualityMetadata: { material: p.qualityMetadata?.material || '', plasticGrade: p.qualityMetadata?.plasticGrade || '', certifications: p.qualityMetadata?.certifications || [] },
-        condition: p.condition,
+        ...empty,
+        ...p,
+        qualityMetadata: {
+          material: p.qualityMetadata?.material || '',
+          plasticGrade: p.qualityMetadata?.plasticGrade || '',
+          certifications: p.qualityMetadata?.certifications || [],
+        },
       });
       setCertText((p.qualityMetadata?.certifications || []).join(', '));
     });
@@ -69,7 +68,7 @@ export default function SellerProductFormPage() {
       const payload = {
         ...form,
         stock: Number(form.stock),
-        yearOfManufacture: form.yearOfManufacture ? Number(form.yearOfManufacture) : undefined,
+        packagingQty: Number(form.packagingQty),
         qualityMetadata: {
           ...form.qualityMetadata,
           certifications: certText.split(',').map((s) => s.trim()).filter(Boolean),
@@ -95,7 +94,7 @@ export default function SellerProductFormPage() {
       <Link to="/seller/products" className="inline-flex items-center gap-1 text-sm text-[#5C635F] hover:text-[#1F2321] mb-6">
         <ChevronLeft className="h-4 w-4" /> My products
       </Link>
-      <h1 className="font-heading text-3xl font-semibold mb-8">{editing ? 'Edit product' : 'New product'}</h1>
+      <h1 className="font-heading text-3xl font-semibold mb-8">{editing ? 'Edit consumable' : 'New consumable'}</h1>
 
       <form onSubmit={submit} className="space-y-6">
         <Section title="Basics">
@@ -103,14 +102,16 @@ export default function SellerProductFormPage() {
           <Field label="Description"><Textarea value={form.description} onChange={setField('description')} data-testid="form-description" className="border-[#D5CEBD]" rows={3} /></Field>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Category">
-              <Select value={form.category} onValueChange={(v) => setForm((f) => ({ ...f, category: v, isUsed: v === 'used_equipment' ? f.isUsed : false }))}>
+              <Select value={form.category} onValueChange={(v) => setForm((f) => ({ ...f, category: v }))}>
                 <SelectTrigger className="border-[#D5CEBD]" data-testid="form-category"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+                <SelectContent className="max-h-72">
+                  {CATEGORY_OPTIONS.map((c) => (
+                    <SelectItem key={c.value} value={c.value} data-testid={`form-category-${c.value}`}>{c.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="Unit (box, vial…)"><Input value={form.unit} onChange={setField('unit')} data-testid="form-unit" className="border-[#D5CEBD]" /></Field>
+            <Field label="Unit (box, vial, pack…)"><Input value={form.unit} onChange={setField('unit')} data-testid="form-unit" className="border-[#D5CEBD]" /></Field>
             <Field label="Stock"><Input type="number" min={0} value={form.stock} onChange={setField('stock')} data-testid="form-stock" className="border-[#D5CEBD]" /></Field>
             <Field label="Image URL"><Input value={form.imageUrl} onChange={setField('imageUrl')} data-testid="form-image" className="border-[#D5CEBD]" /></Field>
           </div>
@@ -143,37 +144,43 @@ export default function SellerProductFormPage() {
           </Button>
         </Section>
 
-        <Section title="Quality metadata (optional)">
+        <Section title="Consumable specifications">
           <div className="grid grid-cols-2 gap-4">
-            <Field label="Material"><Input value={form.qualityMetadata.material} onChange={setQ('material')} data-testid="form-material" className="border-[#D5CEBD]" /></Field>
-            <Field label="Plastic grade"><Input value={form.qualityMetadata.plasticGrade} onChange={setQ('plasticGrade')} data-testid="form-plasticGrade" className="border-[#D5CEBD]" /></Field>
+            <Field label="Sterility">
+              <Select value={form.sterility} onValueChange={(v) => setForm((f) => ({ ...f, sterility: v }))}>
+                <SelectTrigger className="border-[#D5CEBD]" data-testid="form-sterility"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sterile">Sterile</SelectItem>
+                  <SelectItem value="non_sterile">Non-sterile</SelectItem>
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field label="Packaging qty (pieces per pack)">
+              <Input type="number" min={1} value={form.packagingQty} onChange={setField('packagingQty')} data-testid="form-packagingQty" className="border-[#D5CEBD]" />
+            </Field>
+            <div className="col-span-2 flex items-center gap-3 pt-2">
+              <Switch checked={form.disposable} onCheckedChange={(v) => setForm((f) => ({ ...f, disposable: v }))} data-testid="form-disposable" />
+              <Label>Disposable (uncheck for reusable)</Label>
+            </div>
+            <Field label="Manufacturer">
+              <Input value={form.manufacturer} onChange={setField('manufacturer')} data-testid="form-manufacturer" className="border-[#D5CEBD]" />
+            </Field>
+            <Field label="Material">
+              <Input value={form.qualityMetadata.material} onChange={setQ('material')} data-testid="form-material" className="border-[#D5CEBD]" />
+            </Field>
+            <Field label="Plastic grade (if applicable)">
+              <Input value={form.qualityMetadata.plasticGrade} onChange={setQ('plasticGrade')} data-testid="form-plasticGrade" className="border-[#D5CEBD]" />
+            </Field>
+            <Field label="Certifications (comma-separated)">
+              <Input value={certText} onChange={(e) => setCertText(e.target.value)} placeholder="ISO-13485, CE, FDA" data-testid="form-certifications" className="border-[#D5CEBD]" />
+            </Field>
           </div>
-          <Field label="Certifications (comma-separated)"><Input value={certText} onChange={(e) => setCertText(e.target.value)} placeholder="FDA, ISO-13485, CE" data-testid="form-certifications" className="border-[#D5CEBD]" /></Field>
         </Section>
-
-        {form.category === 'used_equipment' && (
-          <Section title="Used / refurbished details">
-            <div className="flex items-center gap-3 mb-3">
-              <Switch checked={form.isUsed} onCheckedChange={(v) => setForm((f) => ({ ...f, isUsed: v }))} data-testid="form-isUsed" />
-              <Label>This is a used unit</Label>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="Condition">
-                <Select value={form.condition || ''} onValueChange={(v) => setForm((f) => ({ ...f, condition: v }))}>
-                  <SelectTrigger className="border-[#D5CEBD]" data-testid="form-condition"><SelectValue placeholder="Select…" /></SelectTrigger>
-                  <SelectContent>{CONDITIONS.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
-                </Select>
-              </Field>
-              <Field label="Year of manufacture"><Input type="number" value={form.yearOfManufacture || ''} onChange={setField('yearOfManufacture')} data-testid="form-year" className="border-[#D5CEBD]" /></Field>
-            </div>
-            <Field label="Usage details"><Textarea rows={2} value={form.usageDetails} onChange={setField('usageDetails')} data-testid="form-usageDetails" className="border-[#D5CEBD]" /></Field>
-          </Section>
-        )}
 
         <div className="flex justify-end">
           <Button type="submit" disabled={busy} data-testid="form-submit-btn"
             className="bg-[#4A675B] hover:bg-[#3D564C] text-white rounded-md">
-            {busy ? 'Saving…' : (editing ? 'Save changes' : 'Create product')}
+            {busy ? 'Saving…' : (editing ? 'Save changes' : 'Create consumable')}
           </Button>
         </div>
       </form>

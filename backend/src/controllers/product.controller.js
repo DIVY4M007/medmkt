@@ -1,19 +1,28 @@
 const Product = require('../models/Product');
 const { z, validate } = require('../utils/validators');
+const { CATEGORIES, STERILITY } = Product;
 
 const tierSchema = z.object({
   minQty: z.number().int().positive(),
   unitPrice: z.number().nonnegative(),
 });
 
+// Marketplace is consumables-only — single category enum. No used-equipment fields anymore.
 const productSchema = z.object({
   name: z.string().min(2),
   description: z.string().optional().default(''),
-  category: z.enum(['medicines', 'consumables', 'equipment', 'used_equipment']),
+  category: z.enum(CATEGORIES),
   imageUrl: z.string().optional().default(''),
   stock: z.number().int().nonnegative().default(100),
-  unit: z.string().default('unit'),
+  unit: z.string().default('box'),
   tierPricing: z.array(tierSchema).min(1),
+
+  // Consumable-specific
+  sterility: z.enum(STERILITY).optional().default('non_sterile'),
+  disposable: z.boolean().optional().default(true),
+  packagingQty: z.number().int().positive().optional().default(1),
+  manufacturer: z.string().optional().default(''),
+
   qualityMetadata: z
     .object({
       material: z.string().optional().default(''),
@@ -22,20 +31,17 @@ const productSchema = z.object({
     })
     .optional()
     .default({}),
-  isUsed: z.boolean().optional().default(false),
-  condition: z.enum(['like_new', 'good', 'fair', 'refurbished']).optional(),
-  usageDetails: z.string().optional().default(''),
-  yearOfManufacture: z.number().int().optional(),
 });
 
 // GET /api/products — public listing (auth required) with filters
 async function listProducts(req, res, next) {
   try {
-    const { category, search, sellerOrg, isUsed } = req.query;
+    const { category, search, sellerOrg, sterility, disposable } = req.query;
     const q = { isActive: true };
     if (category) q.category = category;
     if (sellerOrg) q.sellerOrg = sellerOrg;
-    if (isUsed !== undefined) q.isUsed = isUsed === 'true';
+    if (sterility) q.sterility = sterility;
+    if (disposable !== undefined) q.disposable = disposable === 'true';
     if (search) q.name = { $regex: search, $options: 'i' };
     const products = await Product.find(q).populate('sellerOrg', 'name type').sort({ createdAt: -1 });
     res.json({ products });
@@ -65,18 +71,15 @@ async function getProduct(req, res, next) {
   }
 }
 
-// POST /api/products — create (any user from a seller org)
 async function createProduct(req, res, next) {
   try {
-    const data = { ...req.body, sellerOrg: req.org._id };
-    const product = await Product.create(data);
+    const product = await Product.create({ ...req.body, sellerOrg: req.org._id });
     res.status(201).json({ product });
   } catch (err) {
     next(err);
   }
 }
 
-// PUT /api/products/:id
 async function updateProduct(req, res, next) {
   try {
     const p = await Product.findOne({ _id: req.params.id, sellerOrg: req.org._id });
@@ -89,7 +92,6 @@ async function updateProduct(req, res, next) {
   }
 }
 
-// DELETE /api/products/:id (soft delete)
 async function deleteProduct(req, res, next) {
   try {
     const p = await Product.findOneAndUpdate(
