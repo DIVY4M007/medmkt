@@ -122,10 +122,72 @@ async function submitCart(req, res, next) {
   }
 }
 
+// POST /api/cart/upload-excel — bulk preview (no commit) or commit if ?commit=true.
+// All heavy lifting delegated to services.
+const { parseBuffer, dedupeRows } = require('../services/excelParser.service');
+const { matchRows, commitToCart } = require('../services/cartGen.service');
+const { buildTemplate } = require('../services/excelTemplate.service');
+
+async function uploadExcel(req, res, next) {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded (field name: file)' });
+
+    // 1. Parse + validate rows
+    const { rows, errors } = parseBuffer(req.file.buffer);
+
+    if (rows.length === 0) {
+      return res.status(400).json({ error: 'No usable rows', validationErrors: errors });
+    }
+
+    // 2. De-duplicate same product+sku rows by summing quantity
+    const { unique, duplicates } = dedupeRows(rows);
+
+    // 3. Match against catalogue + compute tier price
+    const { matched, unmatched } = await matchRows(unique, req.org._id);
+
+    const summary = {
+      totalRows: rows.length,
+      matchedCount: matched.length,
+      unmatchedCount: unmatched.length,
+      duplicateCount: duplicates.length,
+      validationErrorCount: errors.length,
+      grandTotal: matched.reduce((s, m) => s + m.lineTotal, 0),
+    };
+
+    const commit = String(req.query.commit || '').toLowerCase() === 'true';
+    if (!commit) {
+      return res.json({ committed: false, summary, matched, unmatched, duplicates, validationErrors: errors });
+    }
+
+    if (matched.length === 0) {
+      return res.status(400).json({ error: 'Nothing to commit — no rows matched', summary, unmatched, validationErrors: errors });
+    }
+
+    const cart = await commitToCart(req.user, matched);
+    return res.json({ committed: true, summary, matched, unmatched, duplicates, validationErrors: errors, cart });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/cart/upload-template — downloads the bulk-cart Excel template
+async function uploadTemplate(_req, res, next) {
+  try {
+    const buf = buildTemplate();
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="bulk-cart-template.xlsx"');
+    res.send(buf);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getCart,
   addItem: [validate(addItemSchema), addItem],
   updateItem: [validate(updateItemSchema), updateItem],
   removeItem,
   submitCart,
+  uploadExcel,
+  uploadTemplate,
 };

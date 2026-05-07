@@ -56,10 +56,17 @@ export default function CartPage() {
 
   return (
     <div className="p-8 lg:p-12 max-w-5xl mx-auto" data-testid="cart-page">
-      <header className="mb-8">
-        <div className="label-overline text-[#C47055] mb-2">Cart</div>
-        <h1 className="font-heading text-4xl font-semibold">My draft order</h1>
-        <p className="text-[#5C635F] mt-2">Build your cart, then submit it for approval.</p>
+      <header className="mb-8 flex items-end justify-between gap-4">
+        <div>
+          <div className="label-overline text-[#C47055] mb-2">Cart</div>
+          <h1 className="font-heading text-4xl font-semibold">My draft order</h1>
+          <p className="text-[#5C635F] mt-2">Build your cart, then submit it for approval.</p>
+        </div>
+        <Link to="/cart/upload">
+          <Button variant="outline" className="border-[#D5CEBD] rounded-md" data-testid="bulk-upload-link">
+            Bulk upload (Excel)
+          </Button>
+        </Link>
       </header>
 
       {cart.items.length === 0 ? (

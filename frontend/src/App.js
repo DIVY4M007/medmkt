@@ -13,6 +13,7 @@ import DashboardPage from './pages/DashboardPage';
 import MarketplacePage from './pages/MarketplacePage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
+import CartUploadPage from './pages/CartUploadPage';
 import OrdersPage from './pages/OrdersPage';
 import OrderDetailPage from './pages/OrderDetailPage';
 import SellerProductsPage from './pages/SellerProductsPage';
@@ -71,6 +72,7 @@ function App() {
 
           {/* Buyer-only */}
           <Route path="/cart" element={<Protected><RequireAccountType accountType="buyer"><CartPage /></RequireAccountType></Protected>} />
+          <Route path="/cart/upload" element={<Protected><RequireAccountType accountType="buyer"><CartUploadPage /></RequireAccountType></Protected>} />
 
           {/* Seller-only */}
           <Route path="/seller/products" element={<Protected><RequireAccountType accountType="seller"><SellerProductsPage /></RequireAccountType></Protected>} />
