@@ -10,7 +10,6 @@ import {
   STERILITY_LABELS,
   ORG_TYPE_LABELS,
 } from '@/lib/format';
-import StatusBadge from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -23,9 +22,8 @@ import {
   Building2,
   Award,
   Layers,
-  Tag,
-  Loader2,
   AlertTriangle,
+  Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -80,8 +78,9 @@ export default function ProductDetailPage() {
       setError(null);
       const data = await api.get(`/products/${params.id}`);
       setProduct(data.product);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load product');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to load product';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -93,12 +92,13 @@ export default function ProductDetailPage() {
     }
   }, [params.id, fetchProduct]);
 
+  // Loading state
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-        <div className="skeleton h-4 w-24 mb-6" />
+      <div className="animate-fade-in-up">
+        <div className="skeleton h-4 w-28 mb-6" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="skeleton aspect-[4/3] rounded-xl" />
+          <div className="skeleton aspect-[4/3] rounded-2xl" />
           <div className="space-y-4">
             <div className="skeleton h-4 w-24" />
             <div className="skeleton h-8 w-3/4" />
@@ -111,18 +111,20 @@ export default function ProductDetailPage() {
     );
   }
 
+  // Error state
   if (error || !product) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="animate-fade-in-up">
         <button
           onClick={() => navigate('marketplace')}
-          className="text-[#4A675B] hover:underline text-sm mb-6 inline-flex items-center gap-1"
+          className="text-primary hover:underline text-sm mb-6 inline-flex items-center gap-1 transition-colors"
+          data-testid="back-link"
         >
           <ArrowLeft className="size-4" /> Marketplace
         </button>
         <div className="text-center py-16">
-          <AlertTriangle className="size-12 text-[#C47055] mx-auto mb-4" />
-          <p className="text-[#5C635F]">{error || 'Product not found'}</p>
+          <AlertTriangle className="size-12 text-accent mx-auto mb-4" />
+          <p className="text-muted-foreground">{error || 'Product not found'}</p>
         </div>
       </div>
     );
@@ -139,7 +141,6 @@ export default function ProductDetailPage() {
 
   const unitPrice = priceForQty(product.tierPricing, quantity);
   const lineTotal = unitPrice * quantity;
-
   const basePrice = sortedTiers.length > 0 ? sortedTiers[0].unitPrice : 0;
 
   const canAddToCart =
@@ -163,28 +164,29 @@ export default function ProductDetailPage() {
           onClick: () => navigate('cart'),
         },
       });
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to add to cart');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to add to cart';
+      toast.error(message);
     } finally {
       setAddingToCart(false);
     }
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+    <div className="animate-fade-in-up">
       {/* Back link */}
       <button
         onClick={() => navigate('marketplace')}
-        className="text-[#4A675B] hover:text-[#3D564C] text-sm mb-6 inline-flex items-center gap-1 transition-colors"
+        className="text-primary hover:underline text-sm mb-6 inline-flex items-center gap-1 transition-colors"
         data-testid="back-link"
       >
         <ArrowLeft className="size-4" /> Marketplace
       </button>
 
-      {/* Grid: Image + Details */}
+      {/* Two-column layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left: Product Image */}
-        <div className="aspect-[4/3] bg-[#EAE5D9] rounded-2xl overflow-hidden flex items-center justify-center">
+        <div className="aspect-[4/3] bg-secondary rounded-2xl overflow-hidden flex items-center justify-center">
           {product.imageUrl ? (
             <img
               src={product.imageUrl}
@@ -192,24 +194,24 @@ export default function ProductDetailPage() {
               className="w-full h-full object-cover"
             />
           ) : (
-            <Package className="size-16 text-[#D5CEBD]" />
+            <Package className="size-16 text-muted-foreground/30" />
           )}
         </div>
 
-        {/* Right: Details */}
+        {/* Right: Product Details */}
         <div className="flex flex-col gap-5">
-          {/* Category + Name */}
+          {/* Category + Name + Seller */}
           <div>
-            <span className="label-overline text-[#5C635F]">
+            <span className="label-overline text-accent">
               {CATEGORY_LABELS[product.category] || product.category}
             </span>
-            <h1 className="font-heading text-3xl font-semibold text-[#1F2321] mt-1">
+            <h1 className="font-heading text-3xl font-semibold text-foreground mt-1">
               {product.name}
             </h1>
-            <p className="text-sm text-[#5C635F] mt-1 flex items-center gap-1.5">
+            <p className="text-sm text-muted-foreground mt-1.5 flex items-center gap-1.5">
               <Building2 className="size-3.5" />
               {product.sellerOrg.name}
-              <span className="text-[#D5CEBD]">•</span>
+              <span className="text-border">·</span>
               {ORG_TYPE_LABELS[product.sellerOrg.type] || product.sellerOrg.type}
             </p>
           </div>
@@ -219,7 +221,7 @@ export default function ProductDetailPage() {
             {product.sterility === 'sterile' && (
               <Badge
                 variant="outline"
-                className="border-emerald-300 bg-emerald-50 text-emerald-700 gap-1"
+                className="border-emerald-300 bg-emerald-50 text-emerald-700 gap-1 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
               >
                 <ShieldCheck className="size-3" />
                 {STERILITY_LABELS[product.sterility]}
@@ -228,7 +230,7 @@ export default function ProductDetailPage() {
             {product.sterility === 'non_sterile' && (
               <Badge
                 variant="outline"
-                className="border-[#D5CEBD] bg-[#F4F1EA] text-[#5C635F] gap-1"
+                className="border-border bg-secondary text-muted-foreground gap-1"
               >
                 <ShieldCheck className="size-3" />
                 {STERILITY_LABELS[product.sterility]}
@@ -237,7 +239,7 @@ export default function ProductDetailPage() {
             {product.disposable ? (
               <Badge
                 variant="outline"
-                className="border-[#C47055]/30 bg-[#C47055]/10 text-[#C47055] gap-1"
+                className="border-teal-300 bg-teal-50 text-teal-700 gap-1 dark:border-teal-700 dark:bg-teal-950 dark:text-teal-300"
               >
                 <Recycle className="size-3" />
                 Disposable
@@ -245,7 +247,7 @@ export default function ProductDetailPage() {
             ) : (
               <Badge
                 variant="outline"
-                className="border-[#4A675B]/30 bg-[#4A675B]/10 text-[#4A675B] gap-1"
+                className="border-orange-300 bg-orange-50 text-orange-700 gap-1 dark:border-orange-700 dark:bg-orange-950 dark:text-orange-300"
               >
                 <Layers className="size-3" />
                 Reusable
@@ -255,33 +257,33 @@ export default function ProductDetailPage() {
 
           {/* Description */}
           {product.description && (
-            <p className="text-sm text-[#5C635F] leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               {product.description}
             </p>
           )}
 
           {/* Tier Pricing Table */}
           {sortedTiers.length > 0 && (
-            <div className="border border-[#D5CEBD] rounded-xl overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-2.5 bg-[#F4F1EA]">
-                <span className="text-sm font-medium text-[#1F2321]">
+            <div className="bg-card rounded-xl border border-border overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-2.5 bg-secondary">
+                <span className="text-sm font-medium text-foreground">
                   Tier pricing
                 </span>
-                <span className="text-xs text-[#5C635F]">
+                <span className="text-xs text-muted-foreground">
                   per {product.unit}
                 </span>
               </div>
-              <table className="w-full text-sm">
+              <table className="w-full text-sm premium-table">
                 <thead>
-                  <tr className="border-b border-[#D5CEBD]">
-                    <th className="text-left px-4 py-2 text-[#5C635F] font-medium">
+                  <tr className="border-b border-border bg-secondary">
+                    <th className="text-left px-4 py-2 text-muted-foreground font-medium">
                       Min qty
                     </th>
-                    <th className="text-left px-4 py-2 text-[#5C635F] font-medium">
+                    <th className="text-left px-4 py-2 text-muted-foreground font-medium">
                       Unit price
                     </th>
-                    <th className="text-left px-4 py-2 text-[#5C635F] font-medium">
-                      Savings
+                    <th className="text-left px-4 py-2 text-muted-foreground font-medium">
+                      Savings %
                     </th>
                   </tr>
                 </thead>
@@ -294,17 +296,15 @@ export default function ProductDetailPage() {
                     return (
                       <tr
                         key={idx}
-                        className={
-                          idx % 2 === 1 ? 'bg-[#F4F1EA]/40' : ''
-                        }
+                        className={idx % 2 === 1 ? 'bg-secondary/40' : ''}
                       >
-                        <td className="px-4 py-2 text-[#1F2321]">
+                        <td className="px-4 py-2 text-foreground">
                           {tier.minQty}+
                         </td>
-                        <td className="px-4 py-2 text-[#1F2321] font-medium">
+                        <td className="px-4 py-2 text-foreground font-medium">
                           {formatINR(tier.unitPrice)}
                         </td>
-                        <td className="px-4 py-2 text-[#4A675B] font-medium">
+                        <td className="px-4 py-2 text-primary font-medium">
                           {savings > 0 ? `${savings.toFixed(0)}%` : '—'}
                         </td>
                       </tr>
@@ -315,58 +315,60 @@ export default function ProductDetailPage() {
             </div>
           )}
 
-          {/* Specifications */}
+          {/* Specifications grid */}
           <div>
-            <h3 className="text-sm font-medium text-[#1F2321] mb-3">
+            <h3 className="text-sm font-medium text-foreground mb-3">
               Specifications
             </h3>
-            <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-2.5 text-sm">
               <div className="flex flex-col">
-                <dt className="text-[#5C635F]">Sterility</dt>
-                <dd className="text-[#1F2321]">
+                <dt className="text-muted-foreground">Sterility</dt>
+                <dd className="text-foreground">
                   {STERILITY_LABELS[product.sterility] || product.sterility}
                 </dd>
               </div>
               <div className="flex flex-col">
-                <dt className="text-[#5C635F]">Use</dt>
-                <dd className="text-[#1F2321]">
+                <dt className="text-muted-foreground">Use</dt>
+                <dd className="text-foreground">
                   {product.disposable ? 'Disposable' : 'Reusable'}
                 </dd>
               </div>
               <div className="flex flex-col">
-                <dt className="text-[#5C635F]">Packaging qty</dt>
-                <dd className="text-[#1F2321]">
+                <dt className="text-muted-foreground">Packaging qty</dt>
+                <dd className="text-foreground">
                   {product.packagingQty} / {product.unit}
                 </dd>
               </div>
               {product.manufacturer && (
                 <div className="flex flex-col">
-                  <dt className="text-[#5C635F]">Manufacturer</dt>
-                  <dd className="text-[#1F2321]">{product.manufacturer}</dd>
+                  <dt className="text-muted-foreground">Manufacturer</dt>
+                  <dd className="text-foreground">{product.manufacturer}</dd>
                 </div>
               )}
               {quality?.material && (
                 <div className="flex flex-col">
-                  <dt className="text-[#5C635F]">Material</dt>
-                  <dd className="text-[#1F2321]">{quality.material}</dd>
+                  <dt className="text-muted-foreground">Material</dt>
+                  <dd className="text-foreground">{quality.material}</dd>
                 </div>
               )}
               {quality?.plasticGrade && (
                 <div className="flex flex-col">
-                  <dt className="text-[#5C635F]">Grade</dt>
-                  <dd className="text-[#1F2321]">{quality.plasticGrade}</dd>
+                  <dt className="text-muted-foreground">Grade</dt>
+                  <dd className="text-foreground">{quality.plasticGrade}</dd>
                 </div>
               )}
             </dl>
+
+            {/* Certifications */}
             {quality?.certifications && quality.certifications.length > 0 && (
-              <div className="mt-3">
-                <dt className="text-[#5C635F] text-sm mb-1.5">Certifications</dt>
+              <div className="mt-4">
+                <dt className="text-muted-foreground text-sm mb-1.5">Certifications</dt>
                 <dd className="flex flex-wrap gap-1.5">
                   {quality.certifications.map((cert) => (
                     <Badge
                       key={cert}
                       variant="outline"
-                      className="border-[#D5CEBD] bg-[#F4F1EA]/60 text-[#5C635F] text-xs gap-1"
+                      className="border-border bg-secondary/60 text-muted-foreground text-xs gap-1"
                     >
                       <Award className="size-3" />
                       {cert}
@@ -377,13 +379,13 @@ export default function ProductDetailPage() {
             )}
           </div>
 
-          {/* Cart Actions */}
-          <div className="bg-[#F4F1EA] border border-[#D5CEBD] rounded-xl p-5">
+          {/* Cart Action Box */}
+          <div className="bg-secondary rounded-xl border border-border p-5">
             <div className="flex flex-wrap items-end gap-4">
               <div className="flex flex-col gap-1.5">
                 <label
                   htmlFor="qty-input"
-                  className="text-xs text-[#5C635F] font-medium"
+                  className="text-xs text-muted-foreground font-medium"
                 >
                   Quantity ({product.unit})
                 </label>
@@ -395,23 +397,23 @@ export default function ProductDetailPage() {
                   onChange={(e) =>
                     setQuantity(Math.max(1, parseInt(e.target.value) || 1))
                   }
-                  className="w-24"
+                  className="w-24 bg-card border-border"
                   data-testid="quantity-input"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <span className="text-xs text-[#5C635F] font-medium">
+                <span className="text-xs text-muted-foreground font-medium">
                   Unit price
                 </span>
-                <span className="text-sm font-semibold text-[#1F2321]">
+                <span className="text-sm font-semibold text-foreground">
                   {formatINR(unitPrice)}
                 </span>
               </div>
               <div className="flex flex-col gap-1.5">
-                <span className="text-xs text-[#5C635F] font-medium">
+                <span className="text-xs text-muted-foreground font-medium">
                   Line total
                 </span>
-                <span className="text-sm font-semibold text-[#4A675B]">
+                <span className="text-sm font-semibold text-primary">
                   {formatINR(lineTotal)}
                 </span>
               </div>
@@ -419,7 +421,7 @@ export default function ProductDetailPage() {
               <Button
                 onClick={handleAddToCart}
                 disabled={!canAddToCart || addingToCart}
-                className="bg-[#4A675B] hover:bg-[#3D564C] text-white"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground btn-press"
                 data-testid="add-to-cart-btn"
               >
                 {addingToCart ? (
@@ -433,25 +435,25 @@ export default function ProductDetailPage() {
 
             {/* Restriction messages */}
             {!user && (
-              <p className="text-xs text-[#C47055] mt-3 flex items-center gap-1">
+              <p className="text-xs text-accent mt-3 flex items-center gap-1">
                 <AlertTriangle className="size-3" />
                 Sign in as a buyer requestor to add items to cart.
               </p>
             )}
             {isOwnProduct && (
-              <p className="text-xs text-[#C47055] mt-3 flex items-center gap-1">
+              <p className="text-xs text-accent mt-3 flex items-center gap-1">
                 <AlertTriangle className="size-3" />
                 You cannot purchase your own organization&apos;s products.
               </p>
             )}
             {isNotBuyer && (
-              <p className="text-xs text-[#C47055] mt-3 flex items-center gap-1">
+              <p className="text-xs text-accent mt-3 flex items-center gap-1">
                 <AlertTriangle className="size-3" />
                 Only buyer accounts can add items to cart.
               </p>
             )}
             {isNotRequestor && !isOwnProduct && (
-              <p className="text-xs text-[#C47055] mt-3 flex items-center gap-1">
+              <p className="text-xs text-accent mt-3 flex items-center gap-1">
                 <AlertTriangle className="size-3" />
                 Only requestors can add items to cart. Approvers review and approve orders.
               </p>

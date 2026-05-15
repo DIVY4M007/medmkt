@@ -10,6 +10,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Loader2, ArrowRight, ChevronLeft, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 
+/* ------------------------------------------------------------------ */
+/*  Types                                                              */
+/* ------------------------------------------------------------------ */
+
 interface OrderItem {
   product?: string;
   productName: string;
@@ -35,6 +39,10 @@ interface Order {
   creator?: { id: string; name: string; email: string };
 }
 
+/* ------------------------------------------------------------------ */
+/*  Component                                                          */
+/* ------------------------------------------------------------------ */
+
 export default function OrderDetailPage() {
   const { navigate, user, params } = useAppStore();
   const [order, setOrder] = useState<Order | null>(null);
@@ -43,6 +51,7 @@ export default function OrderDetailPage() {
   const [showRejectBox, setShowRejectBox] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
+  /* ---- Fetch order ---- */
   useEffect(() => {
     async function fetchOrder() {
       setLoading(true);
@@ -59,159 +68,173 @@ export default function OrderDetailPage() {
     if (params.id) fetchOrder();
   }, [params.id]);
 
+  /* ---- Parsed items ---- */
   const items: OrderItem[] = order
     ? Array.isArray(order.items)
       ? order.items
       : []
     : [];
 
-  // Determine available actions
-  const isBuyerApprover =
-    user?.accountType === 'buyer' && user?.role === 'approver';
+  /* ---- Permission checks ---- */
+  const isBuyerApprover = user?.accountType === 'buyer' && user?.role === 'approver';
   const isSeller = user?.accountType === 'seller';
   const isBuyerOrg = order?.buyerOrgId === user?.orgId;
 
-  // Check if user is part of a seller org in this order
   const isSellerForOrder =
-    isSeller &&
-    items.some((item) => item.sellerOrgId === user?.orgId);
+    isSeller && items.some((item) => item.sellerOrgId === user?.orgId);
 
   const canApprove = isBuyerApprover && isBuyerOrg && order?.status === 'pending_approval';
   const canPay = isBuyerApprover && isBuyerOrg && order?.status === 'approved';
   const canDeliver = isSellerForOrder && order?.status === 'paid';
 
+  /* ---- Actions ---- */
   const handleAction = async (action: string, body?: Record<string, string>) => {
     if (!order) return;
     setActionLoading(true);
     try {
       const data = await api.post(`/orders/${order.id}/${action}`, body);
       setOrder(data.order);
-      toast.success(`Order ${action}d successfully`);
+      toast.success(`Order ${action}ed successfully`);
       setShowRejectBox(false);
       setRejectReason('');
-    } catch (err: any) {
-      toast.error(err.message || `Failed to ${action} order`);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : `Failed to ${action} order`);
     } finally {
       setActionLoading(false);
     }
   };
 
+  /* ---- Loading ---- */
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-[#4A675B]" />
+        <Loader2 className="size-6 animate-spin text-primary" />
       </div>
     );
   }
 
+  /* ---- Not found ---- */
   if (!order) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <p className="text-[#5C635F]">Order not found.</p>
+        <p className="text-muted-foreground">Order not found.</p>
       </div>
     );
   }
 
   const currentStatusIdx = STATUS_FLOW.indexOf(order.status);
 
+  /* ================================================================ */
+  /*  Render                                                            */
+  /* ================================================================ */
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Back link */}
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 animate-fade-in-up">
+      {/* ---- Back link ---- */}
       <button
         data-testid="back-to-orders"
         onClick={() => navigate('orders')}
-        className="mb-6 inline-flex items-center gap-1 text-sm text-[#4A675B] hover:underline"
+        className="mb-6 inline-flex items-center gap-1 text-sm text-primary hover:underline font-medium transition-colors"
       >
-        <ChevronLeft className="h-4 w-4" />
+        <ChevronLeft className="size-4" />
         Orders
       </button>
 
-      {/* Header */}
-      <div className="mb-6 flex items-start justify-between">
+      {/* ---- Header ---- */}
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div>
-          <h1 className="font-heading text-2xl font-semibold text-[#1F2321]">
-            Order {order.id.slice(-6).toUpperCase()}
+          <h1 className="font-heading text-2xl font-semibold text-foreground">
+            Order{' '}
+            <span className="font-mono">{order.id.slice(-6).toUpperCase()}</span>
           </h1>
-          <p className="mt-1 text-sm text-[#5C635F]">
+          <p className="mt-1 text-sm text-muted-foreground">
             Placed by {order.creator?.name || '—'} on {formatDate(order.createdAt)}
             {order.buyerOrg && (
               <>
-                {' '}
-                &middot; {order.buyerOrg.name}
+                {' '}&middot; {order.buyerOrg.name}
               </>
             )}
           </p>
         </div>
-        <StatusBadge status={order.status} />
+        <StatusBadge status={order.status} className="shrink-0" />
       </div>
 
-      {/* Lifecycle section */}
-      <div className="mb-6 rounded-xl border border-[#D5CEBD] bg-[#F4F1EA] p-5">
-        <p className="label-overline text-[#5C635F] mb-3">Lifecycle</p>
+      {/* ---- Lifecycle section ---- */}
+      <div className="mb-6 bg-secondary rounded-xl p-5">
+        <p className="label-overline text-muted-foreground mb-3">Lifecycle</p>
         <div className="flex flex-wrap items-center gap-2">
           {STATUS_FLOW.map((status, idx) => {
             const isReached = idx <= currentStatusIdx;
             const isCurrent = status === order.status;
+
             return (
               <div key={status} className="flex items-center gap-2">
                 {idx > 0 && (
-                  <ArrowRight className="h-3.5 w-3.5 text-[#D5CEBD]" />
+                  <ArrowRight className="size-3.5 text-muted-foreground/40" />
                 )}
                 <StatusBadge
                   status={status}
                   dimmed={!isReached && order.status !== 'rejected'}
-                  className={isCurrent ? 'ring-2 ring-[#4A675B]/30' : ''}
+                  className={isCurrent ? 'ring-2 ring-primary/30' : ''}
                 />
               </div>
             );
           })}
           {order.status === 'rejected' && (
             <>
-              <ArrowRight className="h-3.5 w-3.5 text-[#D5CEBD]" />
-              <StatusBadge status="rejected" />
+              <ArrowRight className="size-3.5 text-muted-foreground/40" />
+              <StatusBadge status="rejected" className="ring-2 ring-destructive/30" />
             </>
           )}
         </div>
       </div>
 
-      {/* Items table */}
-      <div className="mb-6 rounded-xl border border-[#D5CEBD] overflow-hidden">
-        <table className="w-full text-sm">
+      {/* ---- Items table ---- */}
+      <div className="mb-6 bg-card rounded-xl border border-border overflow-hidden">
+        <table className="w-full text-sm premium-table">
           <thead>
-            <tr className="bg-[#F4F1EA] border-b border-[#D5CEBD]">
-              <th className="px-4 py-3 text-left font-medium text-[#5C635F]">Product</th>
-              <th className="px-4 py-3 text-left font-medium text-[#5C635F]">Seller</th>
-              <th className="px-4 py-3 text-right font-medium text-[#5C635F]">Qty</th>
-              <th className="px-4 py-3 text-right font-medium text-[#5C635F]">Unit price</th>
-              <th className="px-4 py-3 text-right font-medium text-[#5C635F]">Total</th>
+            <tr className="bg-secondary border-b border-border">
+              <th className="px-4 py-3 text-left font-medium text-xs uppercase tracking-wider text-muted-foreground">
+                Product
+              </th>
+              <th className="px-4 py-3 text-left font-medium text-xs uppercase tracking-wider text-muted-foreground">
+                Seller
+              </th>
+              <th className="px-4 py-3 text-right font-medium text-xs uppercase tracking-wider text-muted-foreground">
+                Qty
+              </th>
+              <th className="px-4 py-3 text-right font-medium text-xs uppercase tracking-wider text-muted-foreground">
+                Unit price
+              </th>
+              <th className="px-4 py-3 text-right font-medium text-xs uppercase tracking-wider text-muted-foreground">
+                Total
+              </th>
             </tr>
           </thead>
           <tbody>
             {items.map((item, idx) => (
-              <tr
-                key={idx}
-                className="border-b border-[#D5CEBD] last:border-b-0"
-              >
-                <td className="px-4 py-3 text-[#1F2321]">{item.productName || '—'}</td>
-                <td className="px-4 py-3 text-[#5C635F]">
+              <tr key={idx} className="border-b border-border last:border-b-0">
+                <td className="px-4 py-3 text-foreground">{item.productName || '—'}</td>
+                <td className="px-4 py-3 text-muted-foreground">
                   {item.sellerOrgName || '—'}
                 </td>
-                <td className="px-4 py-3 text-right text-[#5C635F]">{item.quantity}</td>
-                <td className="px-4 py-3 text-right text-[#5C635F]">
+                <td className="px-4 py-3 text-right text-muted-foreground">
+                  {item.quantity}
+                </td>
+                <td className="px-4 py-3 text-right text-muted-foreground">
                   {formatINR(item.unitPrice)}
                 </td>
-                <td className="px-4 py-3 text-right font-medium text-[#1F2321]">
+                <td className="px-4 py-3 text-right font-medium text-foreground">
                   {formatINR(item.lineTotal)}
                 </td>
               </tr>
             ))}
           </tbody>
           <tfoot>
-            <tr className="bg-[#F4F1EA] border-t border-[#D5CEBD]">
-              <td colSpan={4} className="px-4 py-3 text-right font-medium text-[#1F2321]">
+            <tr className="bg-secondary border-t border-border">
+              <td colSpan={4} className="px-4 py-3 text-right font-medium text-foreground">
                 Order total
               </td>
-              <td className="px-4 py-3 text-right font-semibold text-[#4A675B]">
+              <td className="px-4 py-3 text-right font-semibold text-primary">
                 {formatINR(order.total)}
               </td>
             </tr>
@@ -219,23 +242,25 @@ export default function OrderDetailPage() {
         </table>
       </div>
 
-      {/* Rejection reason */}
+      {/* ---- Rejection reason ---- */}
       {order.status === 'rejected' && order.rejectionReason && (
-        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4">
-          <div className="flex items-start gap-2">
-            <AlertTriangle className="mt-0.5 h-4 w-4 text-red-600" />
+        <div className="mb-6 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+          <div className="flex items-start gap-3">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-destructive/10">
+              <AlertTriangle className="size-4 text-destructive" />
+            </div>
             <div>
-              <p className="text-sm font-medium text-red-800">Rejection reason</p>
-              <p className="mt-1 text-sm text-red-700">{order.rejectionReason}</p>
+              <p className="text-sm font-semibold text-destructive">Rejection reason</p>
+              <p className="mt-1 text-sm text-destructive/80">{order.rejectionReason}</p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Actions */}
+      {/* ---- Actions card ---- */}
       {(canApprove || canPay || canDeliver) && (
-        <div className="rounded-xl border border-[#D5CEBD] bg-[#FDFBF7] p-5">
-          <p className="label-overline text-[#5C635F] mb-3">Actions</p>
+        <div className="bg-card rounded-xl border border-border p-5">
+          <p className="label-overline text-muted-foreground mb-3">Actions</p>
           <div className="flex flex-wrap items-start gap-3">
             {canApprove && (
               <>
@@ -243,11 +268,9 @@ export default function OrderDetailPage() {
                   data-testid="btn-approve"
                   onClick={() => handleAction('approve')}
                   disabled={actionLoading}
-                  className="bg-[#4A675B] hover:bg-[#3D564C] text-white btn-press"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground btn-press"
                 >
-                  {actionLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : null}
+                  {actionLoading && <Loader2 className="size-4 animate-spin" />}
                   Approve
                 </Button>
                 <Button
@@ -255,7 +278,7 @@ export default function OrderDetailPage() {
                   variant="outline"
                   onClick={() => setShowRejectBox(!showRejectBox)}
                   disabled={actionLoading}
-                  className="border-red-300 text-red-700 hover:bg-red-50 btn-press"
+                  className="border-red-300 text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/50 btn-press"
                 >
                   Reject
                 </Button>
@@ -266,11 +289,9 @@ export default function OrderDetailPage() {
                 data-testid="btn-pay"
                 onClick={() => handleAction('pay')}
                 disabled={actionLoading}
-                className="bg-[#4A675B] hover:bg-[#3D564C] text-white btn-press"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground btn-press"
               >
-                {actionLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : null}
+                {actionLoading && <Loader2 className="size-4 animate-spin" />}
                 Pay
               </Button>
             )}
@@ -279,20 +300,18 @@ export default function OrderDetailPage() {
                 data-testid="btn-deliver"
                 onClick={() => handleAction('deliver')}
                 disabled={actionLoading}
-                className="bg-[#4A675B] hover:bg-[#3D564C] text-white btn-press"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground btn-press"
               >
-                {actionLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : null}
+                {actionLoading && <Loader2 className="size-4 animate-spin" />}
                 Deliver
               </Button>
             )}
           </div>
 
-          {/* Rejection reason input */}
+          {/* Rejection reason textarea */}
           {showRejectBox && (
-            <div className="mt-4 space-y-3 rounded-xl border border-red-200 bg-red-50 p-4">
-              <label className="text-sm font-medium text-red-800">
+            <div className="mt-4 space-y-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 animate-fade-in-up">
+              <label className="text-sm font-semibold text-destructive">
                 Reason for rejection
               </label>
               <Textarea
@@ -300,18 +319,16 @@ export default function OrderDetailPage() {
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 placeholder="Provide a reason..."
-                className="border-red-300 bg-white focus-visible:ring-red-300"
+                className="border-destructive/30 bg-card focus-visible:ring-destructive/30"
               />
               <Button
                 data-testid="btn-confirm-reject"
                 size="sm"
                 onClick={() => handleAction('reject', { reason: rejectReason })}
                 disabled={actionLoading || !rejectReason.trim()}
-                className="bg-red-600 hover:bg-red-700 text-white"
+                className="bg-destructive hover:bg-destructive/90 text-white btn-press"
               >
-                {actionLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : null}
+                {actionLoading && <Loader2 className="size-4 animate-spin" />}
                 Confirm rejection
               </Button>
             </div>
