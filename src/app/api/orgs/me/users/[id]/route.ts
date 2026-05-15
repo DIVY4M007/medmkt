@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db';
 import { getUserFromRequest } from '@/lib/auth-helpers';
 
@@ -10,6 +11,19 @@ export async function DELETE(
     const user = await getUserFromRequest(request);
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     if (user.role !== 'approver') return NextResponse.json({ error: 'Only approvers can remove users' }, { status: 403 });
+
+    const body = await request.json().catch(() => ({}));
+    const { password } = body as { password?: string };
+
+    if (!password) {
+      return NextResponse.json({ error: 'Your password is required to confirm this action' }, { status: 400 });
+    }
+
+    // Verify approver's password
+    const validPassword = await bcrypt.compare(password, user.passwordHash);
+    if (!validPassword) {
+      return NextResponse.json({ error: 'Incorrect password' }, { status: 401 });
+    }
 
     const { id: targetUserId } = await params;
 
