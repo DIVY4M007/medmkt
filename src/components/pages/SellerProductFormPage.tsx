@@ -83,11 +83,15 @@ export default function SellerProductFormPage() {
         try {
           const parsed = JSON.parse(p.tierPricing);
           if (Array.isArray(parsed) && parsed.length > 0) tiers = parsed;
-        } catch {}
+        } catch {
+          /* keep default */
+        }
         let qualityMeta: QualityMetadata = {};
         try {
           if (p.qualityMetadata) qualityMeta = JSON.parse(p.qualityMetadata);
-        } catch {}
+        } catch {
+          /* keep default */
+        }
 
         setForm({
           name: p.name || '',
@@ -195,8 +199,9 @@ export default function SellerProductFormPage() {
         toast.success('Product created');
       }
       navigate('seller-products');
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to save product');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to save product';
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
@@ -205,35 +210,35 @@ export default function SellerProductFormPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-[#4A675B]" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8 animate-fade-in-up">
       {/* Back link */}
       <button
         data-testid="back-to-products"
         onClick={() => navigate('seller-products')}
-        className="mb-6 inline-flex items-center gap-1 text-sm text-[#4A675B] hover:underline"
+        className="mb-6 inline-flex items-center gap-1 text-sm text-primary hover:underline transition-colors"
       >
         <ChevronLeft className="h-4 w-4" />
         My products
       </button>
 
       {/* Title */}
-      <h1 className="font-heading mb-6 text-2xl font-semibold text-[#1F2321]">
+      <h1 className="font-heading mb-6 text-2xl font-semibold text-foreground">
         {isEditing ? 'Edit consumable' : 'New consumable'}
       </h1>
 
-      <div className="space-y-6">
+      <div className="space-y-6 stagger-children">
         {/* Basics section */}
-        <div className="rounded-xl border border-[#D5CEBD] bg-[#FDFBF7] p-6">
-          <p className="label-overline text-[#5C635F] mb-4">Basics</p>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <p className="label-overline text-accent mb-4">Basics</p>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="product-name" className="text-sm text-[#1F2321]">
+              <Label htmlFor="product-name" className="text-sm text-foreground">
                 Name
               </Label>
               <Input
@@ -242,12 +247,12 @@ export default function SellerProductFormPage() {
                 value={form.name}
                 onChange={(e) => updateField('name', e.target.value)}
                 placeholder="e.g. Latex Surgical Gloves"
-                className="mt-1.5 border-[#D5CEBD]"
+                className="mt-1.5 border-border"
               />
             </div>
 
             <div>
-              <Label htmlFor="product-desc" className="text-sm text-[#1F2321]">
+              <Label htmlFor="product-desc" className="text-sm text-foreground">
                 Description
               </Label>
               <Textarea
@@ -256,18 +261,21 @@ export default function SellerProductFormPage() {
                 value={form.description}
                 onChange={(e) => updateField('description', e.target.value)}
                 placeholder="Brief product description"
-                className="mt-1.5 border-[#D5CEBD]"
+                className="mt-1.5 border-border"
                 rows={3}
               />
             </div>
 
             <div>
-              <Label className="text-sm text-[#1F2321]">Category</Label>
+              <Label className="text-sm text-foreground">Category</Label>
               <Select
                 value={form.category}
                 onValueChange={(val) => updateField('category', val)}
               >
-                <SelectTrigger data-testid="select-category" className="mt-1.5 w-full border-[#D5CEBD]">
+                <SelectTrigger
+                  data-testid="select-category"
+                  className="mt-1.5 w-full border-border"
+                >
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -282,7 +290,7 @@ export default function SellerProductFormPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="product-unit" className="text-sm text-[#1F2321]">
+                <Label htmlFor="product-unit" className="text-sm text-foreground">
                   Unit
                 </Label>
                 <Input
@@ -291,11 +299,11 @@ export default function SellerProductFormPage() {
                   value={form.unit}
                   onChange={(e) => updateField('unit', e.target.value)}
                   placeholder="e.g. box, pack"
-                  className="mt-1.5 border-[#D5CEBD]"
+                  className="mt-1.5 border-border"
                 />
               </div>
               <div>
-                <Label htmlFor="product-stock" className="text-sm text-[#1F2321]">
+                <Label htmlFor="product-stock" className="text-sm text-foreground">
                   Stock
                 </Label>
                 <Input
@@ -305,13 +313,13 @@ export default function SellerProductFormPage() {
                   min={0}
                   value={form.stock}
                   onChange={(e) => updateField('stock', parseInt(e.target.value) || 0)}
-                  className="mt-1.5 border-[#D5CEBD]"
+                  className="mt-1.5 border-border"
                 />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="product-image" className="text-sm text-[#1F2321]">
+              <Label htmlFor="product-image" className="text-sm text-foreground">
                 Image URL
               </Label>
               <Input
@@ -320,20 +328,20 @@ export default function SellerProductFormPage() {
                 value={form.imageUrl}
                 onChange={(e) => updateField('imageUrl', e.target.value)}
                 placeholder="https://..."
-                className="mt-1.5 border-[#D5CEBD]"
+                className="mt-1.5 border-border"
               />
             </div>
           </div>
         </div>
 
         {/* Tier pricing section */}
-        <div className="rounded-xl border border-[#D5CEBD] bg-[#FDFBF7] p-6">
-          <p className="label-overline text-[#5C635F] mb-4">Tier pricing</p>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <p className="label-overline text-accent mb-4">Tier pricing</p>
           <div className="space-y-3">
             {form.tierPricing.map((tier, idx) => (
               <div key={idx} className="flex items-end gap-3">
                 <div className="flex-1">
-                  <Label className="text-xs text-[#5C635F]">Min quantity</Label>
+                  <Label className="text-xs text-muted-foreground">Min quantity</Label>
                   <Input
                     data-testid={`input-tier-minQty-${idx}`}
                     type="number"
@@ -342,11 +350,11 @@ export default function SellerProductFormPage() {
                     onChange={(e) =>
                       updateTier(idx, 'minQty', parseInt(e.target.value) || 1)
                     }
-                    className="mt-1 border-[#D5CEBD]"
+                    className="mt-1 border-border"
                   />
                 </div>
                 <div className="flex-1">
-                  <Label className="text-xs text-[#5C635F]">Unit price (₹)</Label>
+                  <Label className="text-xs text-muted-foreground">Unit price (₹)</Label>
                   <Input
                     data-testid={`input-tier-unitPrice-${idx}`}
                     type="number"
@@ -356,7 +364,7 @@ export default function SellerProductFormPage() {
                     onChange={(e) =>
                       updateTier(idx, 'unitPrice', parseFloat(e.target.value) || 0)
                     }
-                    className="mt-1 border-[#D5CEBD]"
+                    className="mt-1 border-border"
                   />
                 </div>
                 {form.tierPricing.length > 1 && (
@@ -366,7 +374,7 @@ export default function SellerProductFormPage() {
                     variant="ghost"
                     size="icon"
                     onClick={() => removeTier(idx)}
-                    className="mb-0.5 text-red-500 hover:bg-red-50 hover:text-red-700"
+                    className="mb-0.5 text-destructive hover:bg-destructive/10 hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -379,27 +387,30 @@ export default function SellerProductFormPage() {
               variant="outline"
               size="sm"
               onClick={addTier}
-              className="border-[#D5CEBD] text-[#4A675B] hover:bg-[#F4F1EA]"
+              className="border-border text-primary hover:bg-secondary btn-press"
             >
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="h-3.5 w-3.5 mr-1" />
               Add tier
             </Button>
           </div>
         </div>
 
         {/* Consumable specifications section */}
-        <div className="rounded-xl border border-[#D5CEBD] bg-[#FDFBF7] p-6">
-          <p className="label-overline text-[#5C635F] mb-4">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <p className="label-overline text-accent mb-4">
             Consumable specifications
           </p>
           <div className="space-y-4">
             <div>
-              <Label className="text-sm text-[#1F2321]">Sterility</Label>
+              <Label className="text-sm text-foreground">Sterility</Label>
               <Select
                 value={form.sterility}
                 onValueChange={(val) => updateField('sterility', val)}
               >
-                <SelectTrigger data-testid="select-sterility" className="mt-1.5 w-full border-[#D5CEBD]">
+                <SelectTrigger
+                  data-testid="select-sterility"
+                  className="mt-1.5 w-full border-border"
+                >
                   <SelectValue placeholder="Select sterility" />
                 </SelectTrigger>
                 <SelectContent>
@@ -411,7 +422,7 @@ export default function SellerProductFormPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="product-packagingQty" className="text-sm text-[#1F2321]">
+                <Label htmlFor="product-packagingQty" className="text-sm text-foreground">
                   Packaging quantity
                 </Label>
                 <Input
@@ -423,7 +434,7 @@ export default function SellerProductFormPage() {
                   onChange={(e) =>
                     updateField('packagingQty', parseInt(e.target.value) || 1)
                   }
-                  className="mt-1.5 border-[#D5CEBD]"
+                  className="mt-1.5 border-border"
                 />
               </div>
               <div className="flex items-center gap-3 pt-6">
@@ -433,14 +444,14 @@ export default function SellerProductFormPage() {
                   checked={form.disposable}
                   onCheckedChange={(val) => updateField('disposable', val)}
                 />
-                <Label htmlFor="product-disposable" className="text-sm text-[#1F2321]">
+                <Label htmlFor="product-disposable" className="text-sm text-foreground">
                   Disposable
                 </Label>
               </div>
             </div>
 
             <div>
-              <Label htmlFor="product-manufacturer" className="text-sm text-[#1F2321]">
+              <Label htmlFor="product-manufacturer" className="text-sm text-foreground">
                 Manufacturer
               </Label>
               <Input
@@ -449,13 +460,13 @@ export default function SellerProductFormPage() {
                 value={form.manufacturer}
                 onChange={(e) => updateField('manufacturer', e.target.value)}
                 placeholder="e.g. MedTech Industries"
-                className="mt-1.5 border-[#D5CEBD]"
+                className="mt-1.5 border-border"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="product-material" className="text-sm text-[#1F2321]">
+                <Label htmlFor="product-material" className="text-sm text-foreground">
                   Material
                 </Label>
                 <Input
@@ -464,11 +475,11 @@ export default function SellerProductFormPage() {
                   value={form.material}
                   onChange={(e) => updateField('material', e.target.value)}
                   placeholder="e.g. Latex"
-                  className="mt-1.5 border-[#D5CEBD]"
+                  className="mt-1.5 border-border"
                 />
               </div>
               <div>
-                <Label htmlFor="product-plasticGrade" className="text-sm text-[#1F2321]">
+                <Label htmlFor="product-plasticGrade" className="text-sm text-foreground">
                   Plastic grade
                 </Label>
                 <Input
@@ -477,13 +488,13 @@ export default function SellerProductFormPage() {
                   value={form.plasticGrade}
                   onChange={(e) => updateField('plasticGrade', e.target.value)}
                   placeholder="e.g. Medical Grade"
-                  className="mt-1.5 border-[#D5CEBD]"
+                  className="mt-1.5 border-border"
                 />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="product-certifications" className="text-sm text-[#1F2321]">
+              <Label htmlFor="product-certifications" className="text-sm text-foreground">
                 Certifications
               </Label>
               <Input
@@ -492,7 +503,7 @@ export default function SellerProductFormPage() {
                 value={form.certifications}
                 onChange={(e) => updateField('certifications', e.target.value)}
                 placeholder="ISO 13485, CE, FDA (comma-separated)"
-                className="mt-1.5 border-[#D5CEBD]"
+                className="mt-1.5 border-border"
               />
             </div>
           </div>
@@ -503,9 +514,9 @@ export default function SellerProductFormPage() {
           data-testid="btn-submit-product"
           onClick={handleSubmit}
           disabled={submitting}
-          className="bg-[#4A675B] hover:bg-[#3D564C] text-white rounded-xl btn-press"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl btn-press px-8"
         >
-          {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+          {submitting && <Loader2 className="h-4 w-4 animate-spin mr-1.5" />}
           {isEditing ? 'Save changes' : 'Create consumable'}
         </Button>
       </div>

@@ -42,12 +42,15 @@ export default function PortalRegisterPage({
   const [submitting, setSubmitting] = useState(false);
 
   const isBuyer = accountType === 'buyer';
-  const panelBg = isBuyer ? 'bg-[#4A675B]' : 'bg-[#C47055]';
-  const accentColor = isBuyer ? '#4A675B' : '#C47055';
+  const panelBg = isBuyer ? 'bg-primary' : 'bg-accent';
+  const panelIconBg = isBuyer ? 'bg-white/20' : 'bg-white/20';
   const orgTypes = isBuyer ? BUYER_ORG_TYPES : SELLER_ORG_TYPES;
   const loginTarget = isBuyer ? 'buyer-login' : 'seller-login';
   const otherPortal = isBuyer ? 'seller-register' : 'buyer-register';
   const otherLabel = isBuyer ? 'Seller' : 'Buyer';
+  const btnBg = isBuyer ? 'bg-primary hover:bg-primary/90' : 'bg-accent hover:bg-accent/90';
+  const accentText = isBuyer ? 'text-primary' : 'text-accent';
+  const accentHoverText = isBuyer ? 'hover:text-primary/80' : 'hover:text-accent/80';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,9 +84,12 @@ export default function PortalRegisterPage({
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Panel */}
       <div
-        className={`${panelBg} flex flex-col justify-between p-8 lg:p-12 lg:w-5/12 min-h-[280px] lg:min-h-screen`}
+        className={`${panelBg} flex flex-col justify-between p-8 lg:p-12 lg:w-5/12 min-h-[280px] lg:min-h-screen relative overflow-hidden`}
       >
-        <div>
+        {/* Decorative dot pattern overlay */}
+        <div className="absolute inset-0 dot-pattern opacity-[0.04]" />
+
+        <div className="relative z-10">
           <button
             onClick={() => navigate('register-portal')}
             className="flex items-center gap-2 text-white/70 hover:text-white transition-colors mb-10"
@@ -94,11 +100,11 @@ export default function PortalRegisterPage({
           </button>
 
           <div className="flex items-center gap-2.5 mb-8">
-            <div className="w-10 h-10 rounded-md bg-white/20 flex items-center justify-center">
+            <div className={`w-10 h-10 rounded-md ${panelIconBg} flex items-center justify-center`}>
               <Stethoscope className="w-5 h-5 text-white" />
             </div>
             <span className="font-heading font-semibold text-xl text-white">
-              MedMarket
+              MedMkt
             </span>
           </div>
 
@@ -114,13 +120,11 @@ export default function PortalRegisterPage({
           </p>
         </div>
 
-        <div className="hidden lg:block">
+        <div className="relative z-10 hidden lg:block">
           <div className="flex items-center gap-4 mt-8">
             <div className="flex flex-col">
-              <span className="text-white/50 text-xs uppercase tracking-wide">
-                Account type
-              </span>
-              <span className="text-white font-heading font-semibold">
+              <span className="label-overline text-white/50">Account type</span>
+              <span className="text-white font-heading font-semibold mt-0.5">
                 {isBuyer ? 'Buyer' : 'Seller'}
               </span>
             </div>
@@ -129,18 +133,18 @@ export default function PortalRegisterPage({
       </div>
 
       {/* Right Panel */}
-      <div className="flex-1 flex flex-col justify-center px-6 py-10 sm:px-12 lg:px-16 bg-[#FDFBF7]">
-        <div className="w-full max-w-md mx-auto">
-          <h1 className="font-heading text-2xl font-bold text-[#1F2321] mb-1">
+      <div className="flex-1 flex flex-col justify-center px-6 py-10 sm:px-12 lg:px-16 bg-background">
+        <div className="w-full max-w-md mx-auto animate-fade-in-up">
+          <h1 className="font-heading text-2xl font-bold text-foreground mb-1">
             Create account
           </h1>
-          <p className="text-[#5C635F] text-sm mb-8">
-            Set up your {isBuyer ? 'buyer' : 'seller'} organization on MedMarket
+          <p className="text-muted-foreground text-sm mb-8">
+            Set up your {isBuyer ? 'buyer' : 'seller'} organization on MedMkt
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="orgName" className="text-[#1F2321]">
+              <Label htmlFor="orgName" className="text-foreground">
                 Organization name
               </Label>
               <Input
@@ -149,18 +153,18 @@ export default function PortalRegisterPage({
                 placeholder={isBuyer ? 'City General Hospital' : 'MedSupply Co.'}
                 value={orgName}
                 onChange={(e) => setOrgName(e.target.value)}
-                className="border-[#D5CEBD] bg-white focus-visible:border-[#4A675B]"
+                className="border-border bg-card focus-visible:ring-primary/20 focus-visible:border-primary"
                 data-testid="register-orgName"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="orgType" className="text-[#1F2321]">
+              <Label htmlFor="orgType" className="text-foreground">
                 Organization type
               </Label>
               <Select value={orgType} onValueChange={setOrgType}>
                 <SelectTrigger
-                  className="w-full border-[#D5CEBD] bg-white"
+                  className="w-full border-border bg-card"
                   data-testid="register-orgType"
                 >
                   <SelectValue placeholder="Select type" />
@@ -176,7 +180,7 @@ export default function PortalRegisterPage({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-[#1F2321]">
+              <Label htmlFor="name" className="text-foreground">
                 Your name
               </Label>
               <Input
@@ -185,13 +189,13 @@ export default function PortalRegisterPage({
                 placeholder="Full name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="border-[#D5CEBD] bg-white focus-visible:border-[#4A675B]"
+                className="border-border bg-card focus-visible:ring-primary/20 focus-visible:border-primary"
                 data-testid="register-name"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-[#1F2321]">
+              <Label htmlFor="email" className="text-foreground">
                 Email
               </Label>
               <Input
@@ -200,14 +204,14 @@ export default function PortalRegisterPage({
                 placeholder="you@organization.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="border-[#D5CEBD] bg-white focus-visible:border-[#4A675B]"
+                className="border-border bg-card focus-visible:ring-primary/20 focus-visible:border-primary"
                 data-testid="register-email"
                 autoComplete="email"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-[#1F2321]">
+              <Label htmlFor="password" className="text-foreground">
                 Password
               </Label>
               <div className="relative">
@@ -217,14 +221,14 @@ export default function PortalRegisterPage({
                   placeholder="At least 8 characters"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="border-[#D5CEBD] bg-white pr-10 focus-visible:border-[#4A675B]"
+                  className="border-border bg-card pr-10 focus-visible:ring-primary/20 focus-visible:border-primary"
                   data-testid="register-password"
                   autoComplete="new-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5C635F] hover:text-[#1F2321]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   data-testid="register-toggle-password"
                 >
                   {showPassword ? (
@@ -239,8 +243,7 @@ export default function PortalRegisterPage({
             <Button
               type="submit"
               disabled={submitting}
-              className="w-full rounded-md text-white font-medium h-10"
-              style={{ backgroundColor: accentColor }}
+              className={`w-full rounded-md text-white font-medium h-10 btn-press ${btnBg}`}
               data-testid="register-submit"
             >
               {submitting ? 'Creating account...' : 'Create account'}
@@ -248,23 +251,21 @@ export default function PortalRegisterPage({
           </form>
 
           <div className="mt-6 flex flex-col gap-3 text-center text-sm">
-            <p className="text-[#5C635F]">
+            <p className="text-muted-foreground">
               Already have an account?{' '}
               <button
                 onClick={() => navigate(loginTarget)}
-                className="font-medium hover:underline"
-                style={{ color: accentColor }}
+                className={`font-medium ${accentText} ${accentHoverText} hover:underline`}
                 data-testid="register-goto-login"
               >
                 Sign in
               </button>
             </p>
-            <p className="text-[#5C635F]">
+            <p className="text-muted-foreground">
               Are you a {otherLabel.toLowerCase()}?{' '}
               <button
                 onClick={() => navigate(otherPortal)}
-                className="font-medium hover:underline"
-                style={{ color: accentColor }}
+                className={`font-medium ${accentText} ${accentHoverText} hover:underline`}
                 data-testid="register-switch-portal"
               >
                 Register as {otherLabel}

@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useAppStore } from '@/lib/store';
 import { api } from '@/lib/api-client';
 import { formatINR, CATEGORY_LABELS, CATEGORY_OPTIONS } from '@/lib/format';
-import { Search, SlidersHorizontal, ShieldCheck } from 'lucide-react';
+import { Search, ShieldCheck, Package, SlidersHorizontal, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -33,7 +33,7 @@ export default function MarketplacePage() {
   const [category, setCategory] = useState('all');
   const [sterility, setSterility] = useState('all');
 
-  // Debounce search input
+  // Debounce search input (300ms)
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 300);
     return () => clearTimeout(timer);
@@ -60,10 +60,18 @@ export default function MarketplacePage() {
     fetchProducts();
   }, [fetchProducts]);
 
+  const hasFilters = category !== 'all' || sterility !== 'all' || search !== '';
+
+  function clearFilters() {
+    setSearch('');
+    setCategory('all');
+    setSterility('all');
+  }
+
   function getTierInfo(tierPricingJson: string) {
     try {
       const tiers: TierPrice[] = JSON.parse(tierPricingJson);
-      if (!Array.isArray(tiers) || tiers.length === 0) return { base: 0, best: null, unit: 'unit' };
+      if (!Array.isArray(tiers) || tiers.length === 0) return { base: 0, best: null };
       const sorted = [...tiers].sort((a, b) => a.minQty - b.minQty);
       const base = sorted[0].unitPrice;
       const best = sorted[sorted.length - 1].unitPrice;
@@ -74,34 +82,37 @@ export default function MarketplacePage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in-up">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <div className="flex-1">
-          <h1 className="font-heading text-2xl sm:text-3xl font-semibold text-[#1F2321]">
+          <h1 className="font-heading text-2xl sm:text-3xl font-semibold text-foreground">
             Browse catalogue
           </h1>
-          <p className="mt-1 text-sm text-[#5C635F]">
+          <p className="mt-1 text-sm text-muted-foreground">
             {products.length} product{products.length !== 1 ? 's' : ''} available
           </p>
         </div>
         <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[#5C635F]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
             data-testid="marketplace-search"
             placeholder="Search products..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 border-[#D5CEBD] bg-[#FDFBF7] rounded-xl"
+            className="pl-9 bg-card rounded-xl border-border"
           />
         </div>
       </div>
 
       {/* Filter Row */}
       <div className="flex flex-wrap items-center gap-3">
-        <SlidersHorizontal className="size-4 text-[#5C635F] hidden sm:block" />
+        <SlidersHorizontal className="size-4 text-muted-foreground hidden sm:block" />
         <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger data-testid="filter-category" className="w-[180px] border-[#D5CEBD] bg-[#FDFBF7] rounded-lg">
+          <SelectTrigger
+            data-testid="filter-category"
+            className="w-[180px] bg-card rounded-xl border-border"
+          >
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -115,7 +126,10 @@ export default function MarketplacePage() {
         </Select>
 
         <Select value={sterility} onValueChange={setSterility}>
-          <SelectTrigger data-testid="filter-sterility" className="w-[160px] border-[#D5CEBD] bg-[#FDFBF7] rounded-lg">
+          <SelectTrigger
+            data-testid="filter-sterility"
+            className="w-[160px] bg-card rounded-xl border-border"
+          >
             <SelectValue placeholder="Sterility" />
           </SelectTrigger>
           <SelectContent>
@@ -125,18 +139,15 @@ export default function MarketplacePage() {
           </SelectContent>
         </Select>
 
-        {(category !== 'all' || sterility !== 'all' || search) && (
+        {hasFilters && (
           <Button
             variant="ghost"
             size="sm"
             data-testid="clear-filters"
-            onClick={() => {
-              setSearch('');
-              setCategory('all');
-              setSterility('all');
-            }}
-            className="text-[#C47055] hover:text-[#C47055]"
+            onClick={clearFilters}
+            className="text-accent hover:text-accent"
           >
+            <X className="size-3.5 mr-1" />
             Clear filters
           </Button>
         )}
@@ -144,33 +155,24 @@ export default function MarketplacePage() {
 
       {/* Product Grid */}
       {loading ? (
-        <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <div className="flex-1 space-y-2">
-              <div className="skeleton h-8 w-48" />
-              <div className="skeleton h-4 w-32" />
-            </div>
-            <div className="skeleton h-10 w-80 rounded-md" />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[1,2,3,4,5,6].map(i => (
-              <div key={i} className="border border-[#D5CEBD] rounded-xl overflow-hidden">
-                <div className="skeleton aspect-[4/3]" />
-                <div className="p-4 space-y-2">
-                  <div className="skeleton h-3 w-20" />
-                  <div className="skeleton h-5 w-3/4" />
-                  <div className="skeleton h-3 w-1/2" />
-                  <div className="skeleton h-4 w-24 mt-2" />
-                </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="bg-card rounded-xl border border-border overflow-hidden">
+              <div className="skeleton aspect-[4/3]" />
+              <div className="p-4 space-y-2">
+                <div className="skeleton h-3 w-20" />
+                <div className="skeleton h-5 w-3/4" />
+                <div className="skeleton h-3 w-1/2" />
+                <div className="skeleton h-4 w-24 mt-2" />
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       ) : products.length === 0 ? (
-        <div className="flex flex-col items-center justify-center min-h-[40vh] text-[#5C635F] animate-fade-in-up rounded-xl">
+        <div className="flex flex-col items-center justify-center min-h-[40vh] text-muted-foreground animate-fade-in-up">
           <Search className="size-12 mb-4 opacity-30" />
-          <p className="text-lg font-heading font-semibold">No products found</p>
-          <p className="text-sm mt-1">Try adjusting your filters or search</p>
+          <p className="text-lg font-heading font-semibold text-foreground">No products found</p>
+          <p className="text-sm mt-1">Try adjusting your filters</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
@@ -184,54 +186,54 @@ export default function MarketplacePage() {
                 key={product.id}
                 data-testid={`product-card-${product.id}`}
                 onClick={() => navigate('product-detail', { id: product.id })}
-                className="border border-[#D5CEBD] rounded-xl bg-[#FDFBF7] card-hover transition-all text-left overflow-hidden group cursor-pointer"
+                className="bg-card rounded-xl border border-border overflow-hidden card-hover text-left cursor-pointer group btn-press"
               >
                 {/* Product Image */}
-                <div className="relative aspect-[4/3] bg-[#EAE5D9] overflow-hidden">
+                <div className="relative aspect-[4/3] bg-secondary overflow-hidden">
                   {product.imageUrl ? (
                     <img
                       src={product.imageUrl}
                       alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Search className="size-8 text-[#D5CEBD]" />
+                      <Package className="size-10 text-muted-foreground/30" />
                     </div>
                   )}
                   {isSterile && (
-                    <span className="absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-xl text-[10px] font-semibold tracking-wide bg-white/90 text-[#4A675B] backdrop-blur-sm shadow-sm">
+                    <span className="absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold tracking-wide bg-card/90 text-primary backdrop-blur-sm shadow-sm">
                       <ShieldCheck className="size-3" />
                       Sterile
                     </span>
                   )}
                 </div>
 
-                {/* Product Info */}
+                {/* Card Body */}
                 <div className="p-4 space-y-2">
-                  <p className="label-overline text-[#C47055]">{categoryLabel}</p>
-                  <h3 className="font-heading text-lg font-semibold text-[#1F2321] leading-snug line-clamp-2">
+                  <p className="label-overline text-accent">{categoryLabel}</p>
+                  <h3 className="font-heading text-lg font-semibold text-foreground leading-snug line-clamp-2">
                     {product.name}
                   </h3>
-                  <p className="text-sm text-[#5C635F]">
+                  <p className="text-sm text-muted-foreground">
                     {product.sellerOrg?.name || 'Unknown seller'}
                   </p>
 
                   {/* Pricing */}
-                  <div className="pt-2 border-t border-[#D5CEBD]/50">
+                  <div className="pt-2 border-t border-border/50">
                     {base > 0 ? (
                       <>
-                        <p className="text-sm text-[#1F2321]">
+                        <p className="text-sm text-foreground">
                           From <span className="font-semibold">{formatINR(base)}</span> / per {product.unit}
                         </p>
                         {best !== null && (
-                          <p className="text-xs text-[#4A675B] mt-0.5">
+                          <p className="text-xs text-primary mt-0.5 font-medium">
                             as low as {formatINR(best)}
                           </p>
                         )}
                       </>
                     ) : (
-                      <p className="text-sm text-[#5C635F]">Contact for pricing</p>
+                      <p className="text-sm text-muted-foreground">Contact for pricing</p>
                     )}
                   </div>
                 </div>
