@@ -72,28 +72,28 @@ function AuthPortalPage({ mode }: AuthPortalPageProps) {
             <button
               data-testid="portal-buyer"
               onClick={() => navigate(buyerTarget)}
-              className="portal-card-buyer group bg-card border-2 border-border rounded-xl p-8 text-left focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 focus:ring-offset-background"
+              className="portal-card-buyer group border-2 border-border rounded-xl p-8 text-left focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 focus:ring-offset-background"
             >
               <div className="relative z-10">
-                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-white/20 transition-all duration-300">
-                  <ShoppingCart className="w-7 h-7 text-primary group-hover:text-white group-hover:scale-110 transition-all duration-300" />
+                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5 transition-all duration-300">
+                  <ShoppingCart className="w-7 h-7 text-primary group-hover:scale-110 transition-all duration-300" />
                 </div>
-                <h2 className="font-heading text-xl font-semibold text-foreground mb-1.5 group-hover:text-white transition-colors duration-300">
+                <h2 className="font-heading text-xl font-semibold text-foreground mb-1.5 transition-colors duration-300">
                   I&apos;m a Buyer
                 </h2>
-                <p className="text-sm text-muted-foreground mb-5 leading-relaxed group-hover:text-white/80 transition-colors duration-300">
+                <p className="text-sm text-muted-foreground mb-5 leading-relaxed transition-colors duration-300">
                   Hospitals &amp; pharmacies looking to procure medical supplies
                   efficiently.
                 </p>
                 <div className="flex flex-wrap gap-1.5 mb-5">
-                  <span className="px-2.5 py-1 bg-primary/8 text-primary rounded-md text-xs font-medium group-hover:bg-white/20 group-hover:text-white transition-colors duration-300">
+                  <span className="px-2.5 py-1 bg-primary/8 text-primary rounded-md text-xs font-medium transition-colors duration-300">
                     Hospital
                   </span>
-                  <span className="px-2.5 py-1 bg-primary/8 text-primary rounded-md text-xs font-medium group-hover:bg-white/20 group-hover:text-white transition-colors duration-300">
+                  <span className="px-2.5 py-1 bg-primary/8 text-primary rounded-md text-xs font-medium transition-colors duration-300">
                     Pharmacy
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 text-sm font-medium text-primary group-hover:text-white transition-colors duration-300">
+                <div className="flex items-center gap-1.5 text-sm font-medium text-primary transition-colors duration-300">
                   {isLogin ? 'Sign in' : 'Get started'}
                   <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </div>
@@ -104,28 +104,28 @@ function AuthPortalPage({ mode }: AuthPortalPageProps) {
             <button
               data-testid="portal-seller"
               onClick={() => navigate(sellerTarget)}
-              className="portal-card-seller group bg-card border-2 border-accent/20 rounded-xl p-8 text-left focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-background"
+              className="portal-card-seller group border-2 border-accent/20 rounded-xl p-8 text-left focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-background"
             >
               <div className="relative z-10">
-                <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-5 group-hover:bg-white/20 transition-all duration-300">
-                  <Store className="w-7 h-7 text-accent group-hover:text-white group-hover:scale-110 transition-all duration-300" />
+                <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-5 transition-all duration-300">
+                  <Store className="w-7 h-7 text-accent group-hover:scale-110 transition-all duration-300" />
                 </div>
-                <h2 className="font-heading text-xl font-semibold text-foreground mb-1.5 group-hover:text-white transition-colors duration-300">
+                <h2 className="font-heading text-xl font-semibold text-foreground mb-1.5 transition-colors duration-300">
                   I&apos;m a Seller
                 </h2>
-                <p className="text-sm text-muted-foreground mb-5 leading-relaxed group-hover:text-white/80 transition-colors duration-300">
+                <p className="text-sm text-muted-foreground mb-5 leading-relaxed transition-colors duration-300">
                   Vendors &amp; distributors listing products and fulfilling
                   orders.
                 </p>
                 <div className="flex flex-wrap gap-1.5 mb-5">
-                  <span className="px-2.5 py-1 bg-accent/8 text-accent rounded-md text-xs font-medium group-hover:bg-white/20 group-hover:text-white transition-colors duration-300">
+                  <span className="px-2.5 py-1 bg-accent/8 text-accent rounded-md text-xs font-medium transition-colors duration-300">
                     Vendor
                   </span>
-                  <span className="px-2.5 py-1 bg-accent/8 text-accent rounded-md text-xs font-medium group-hover:bg-white/20 group-hover:text-white transition-colors duration-300">
+                  <span className="px-2.5 py-1 bg-accent/8 text-accent rounded-md text-xs font-medium transition-colors duration-300">
                     Distributor
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 text-sm font-medium text-accent group-hover:text-white transition-colors duration-300">
+                <div className="flex items-center gap-1.5 text-sm font-medium text-accent transition-colors duration-300">
                   {isLogin ? 'Sign in' : 'Get started'}
                   <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </div>
