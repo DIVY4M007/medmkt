@@ -42,6 +42,7 @@ export default function TeamPage() {
 
   // Delete confirmation modal
   const [deleteTarget, setDeleteTarget] = useState<OrgUser | null>(null);
+  const [deletePassword, setDeletePassword] = useState('');
   const [deleting, setDeleting] = useState(false);
 
   const isApprover = user?.role === 'approver';
@@ -92,14 +93,19 @@ export default function TeamPage() {
 
   const handleDeleteUser = async () => {
     if (!deleteTarget) return;
+    if (!deletePassword.trim()) {
+      toast.error('Please enter your password to confirm');
+      return;
+    }
     setDeleting(true);
     // Optimistic update
     const previousUsers = users;
     setUsers((prev) => prev.filter((u) => u.id !== deleteTarget.id));
     try {
-      await api.delete(`/orgs/me/users/${deleteTarget.id}`);
+      await api.delete(`/orgs/me/users/${deleteTarget.id}`, { password: deletePassword });
       toast.success(`${deleteTarget.name} has been removed`);
       setDeleteTarget(null);
+      setDeletePassword('');
     } catch (err: unknown) {
       // Revert optimistic update
       setUsers(previousUsers);
@@ -322,7 +328,7 @@ export default function TeamPage() {
       {deleteTarget && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center p-4 modal-overlay"
-          onClick={() => !deleting && setDeleteTarget(null)}
+          onClick={() => !deleting && (setDeleteTarget(null), setDeletePassword(''))}
         >
           <div
             className="bg-card rounded-2xl shadow-2xl max-w-md w-full p-6 animate-scale-in"
@@ -343,17 +349,35 @@ export default function TeamPage() {
                 </p>
               </div>
               <button
-                onClick={() => !deleting && setDeleteTarget(null)}
+                onClick={() => !deleting && (setDeleteTarget(null), setDeletePassword(''))}
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 data-testid="modal-close"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="mt-6 flex justify-end gap-3">
+            <div className="mt-5">
+              <Label htmlFor="delete-password" className="text-sm text-foreground">
+                Confirm with your password
+              </Label>
+              <Input
+                id="delete-password"
+                data-testid="input-delete-password"
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                placeholder="Enter your password"
+                className="mt-1.5 border-border bg-card"
+                autoFocus
+              />
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                For security, please enter your own password to authorize this removal.
+              </p>
+            </div>
+            <div className="mt-5 flex justify-end gap-3">
               <Button
                 variant="outline"
-                onClick={() => setDeleteTarget(null)}
+                onClick={() => { setDeleteTarget(null); setDeletePassword(''); }}
                 disabled={deleting}
                 className="border-border rounded-lg btn-press"
                 data-testid="modal-cancel"
@@ -362,7 +386,7 @@ export default function TeamPage() {
               </Button>
               <Button
                 onClick={handleDeleteUser}
-                disabled={deleting}
+                disabled={deleting || !deletePassword.trim()}
                 className="bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-lg btn-press"
                 data-testid="modal-confirm-delete"
               >
