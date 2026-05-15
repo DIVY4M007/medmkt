@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useAppStore } from '@/lib/store';
 import { api } from '@/lib/api-client';
 import { formatINR, CATEGORY_LABELS, CATEGORY_OPTIONS } from '@/lib/format';
-import { Search, ShieldCheck, Package, SlidersHorizontal, X } from 'lucide-react';
+import { Search, ShieldCheck, Package, SlidersHorizontal, X, Tag } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,8 @@ interface Product {
   unit: string;
   tierPricing: string;
   sterility: string;
+  discountPercent?: number | null;
+  minOrderForDiscount?: number | null;
   sellerOrg?: { name: string };
   [key: string]: unknown;
 }
@@ -32,6 +34,7 @@ export default function MarketplacePage() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [sterility, setSterility] = useState('all');
+  const [discountOnly, setDiscountOnly] = useState(false);
 
   // Debounce search input (300ms)
   useEffect(() => {
@@ -46,6 +49,7 @@ export default function MarketplacePage() {
       if (debouncedSearch) params.set('search', debouncedSearch);
       if (category && category !== 'all') params.set('category', category);
       if (sterility && sterility !== 'all') params.set('sterility', sterility);
+      if (discountOnly) params.set('hasDiscount', 'true');
 
       const res = await api.get(`/products?${params.toString()}`) as { products: Product[] };
       setProducts(res.products);
@@ -54,18 +58,19 @@ export default function MarketplacePage() {
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearch, category, sterility]);
+  }, [debouncedSearch, category, sterility, discountOnly]);
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
-  const hasFilters = category !== 'all' || sterility !== 'all' || search !== '';
+  const hasFilters = category !== 'all' || sterility !== 'all' || search !== '' || discountOnly;
 
   function clearFilters() {
     setSearch('');
     setCategory('all');
     setSterility('all');
+    setDiscountOnly(false);
   }
 
   function getTierInfo(tierPricingJson: string) {
@@ -139,6 +144,19 @@ export default function MarketplacePage() {
           </SelectContent>
         </Select>
 
+        <button
+          onClick={() => setDiscountOnly(!discountOnly)}
+          data-testid="filter-discount"
+          className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-medium transition-all ${
+            discountOnly
+              ? 'border-primary bg-primary/5 text-primary'
+              : 'border-border bg-card text-muted-foreground hover:bg-secondary'
+          }`}
+        >
+          <Tag className="size-4" />
+          Discount
+        </button>
+
         {hasFilters && (
           <Button
             variant="ghost"
@@ -207,6 +225,12 @@ export default function MarketplacePage() {
                       Sterile
                     </span>
                   )}
+                  {product.discountPercent && product.discountPercent > 0 && (
+                    <span className="absolute top-3 left-3 inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold tracking-wide bg-emerald-50/95 text-emerald-700 backdrop-blur-sm shadow-sm border border-emerald-200">
+                      <Tag className="size-3" />
+                      {product.discountPercent}% off
+                    </span>
+                  )}
                 </div>
 
                 {/* Card Body */}
@@ -226,11 +250,18 @@ export default function MarketplacePage() {
                         <p className="text-sm text-foreground">
                           From <span className="font-semibold">{formatINR(base)}</span> / per {product.unit}
                         </p>
-                        {best !== null && (
-                          <p className="text-xs text-primary mt-0.5 font-medium">
-                            as low as {formatINR(best)}
-                          </p>
-                        )}
+                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                          {best !== null && (
+                            <p className="text-xs text-primary font-medium">
+                              as low as {formatINR(best)}
+                            </p>
+                          )}
+                          {product.discountPercent && product.discountPercent > 0 && product.minOrderForDiscount && (
+                            <p className="text-xs text-emerald-600 font-medium">
+                              +{product.discountPercent}% off at {product.minOrderForDiscount}+ units
+                            </p>
+                          )}
+                        </div>
                       </>
                     ) : (
                       <p className="text-sm text-muted-foreground">Contact for pricing</p>

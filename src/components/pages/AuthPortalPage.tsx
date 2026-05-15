@@ -72,10 +72,10 @@ function AuthPortalPage({ mode }: AuthPortalPageProps) {
             <button
               data-testid="portal-buyer"
               onClick={() => navigate(buyerTarget)}
-              className="portal-card-buyer group border-2 border-border rounded-xl p-8 text-left focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 focus:ring-offset-background"
+              className="portal-card-buyer group border-2 border-border rounded-xl p-8 text-left bg-transparent focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 focus:ring-offset-background"
             >
               <div className="relative z-10">
-                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5 transition-all duration-300">
+                <div className="w-14 h-14 rounded-xl border border-border/60 flex items-center justify-center mb-5 transition-all duration-300">
                   <ShoppingCart className="w-7 h-7 text-primary group-hover:scale-110 transition-all duration-300" />
                 </div>
                 <h2 className="font-heading text-xl font-semibold text-foreground mb-1.5 transition-colors duration-300">
@@ -86,10 +86,10 @@ function AuthPortalPage({ mode }: AuthPortalPageProps) {
                   efficiently.
                 </p>
                 <div className="flex flex-wrap gap-1.5 mb-5">
-                  <span className="px-2.5 py-1 bg-primary/8 text-primary rounded-md text-xs font-medium transition-colors duration-300">
+                  <span className="px-2.5 py-1 border border-border/60 text-primary rounded-md text-xs font-medium transition-colors duration-300">
                     Hospital
                   </span>
-                  <span className="px-2.5 py-1 bg-primary/8 text-primary rounded-md text-xs font-medium transition-colors duration-300">
+                  <span className="px-2.5 py-1 border border-border/60 text-primary rounded-md text-xs font-medium transition-colors duration-300">
                     Pharmacy
                   </span>
                 </div>
@@ -104,10 +104,10 @@ function AuthPortalPage({ mode }: AuthPortalPageProps) {
             <button
               data-testid="portal-seller"
               onClick={() => navigate(sellerTarget)}
-              className="portal-card-seller group border-2 border-accent/20 rounded-xl p-8 text-left focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-background"
+              className="portal-card-seller group border-2 border-border rounded-xl p-8 text-left bg-transparent focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-background"
             >
               <div className="relative z-10">
-                <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-5 transition-all duration-300">
+                <div className="w-14 h-14 rounded-xl border border-border/60 flex items-center justify-center mb-5 transition-all duration-300">
                   <Store className="w-7 h-7 text-accent group-hover:scale-110 transition-all duration-300" />
                 </div>
                 <h2 className="font-heading text-xl font-semibold text-foreground mb-1.5 transition-colors duration-300">
@@ -118,10 +118,10 @@ function AuthPortalPage({ mode }: AuthPortalPageProps) {
                   orders.
                 </p>
                 <div className="flex flex-wrap gap-1.5 mb-5">
-                  <span className="px-2.5 py-1 bg-accent/8 text-accent rounded-md text-xs font-medium transition-colors duration-300">
+                  <span className="px-2.5 py-1 border border-border/60 text-accent rounded-md text-xs font-medium transition-colors duration-300">
                     Vendor
                   </span>
-                  <span className="px-2.5 py-1 bg-accent/8 text-accent rounded-md text-xs font-medium transition-colors duration-300">
+                  <span className="px-2.5 py-1 border border-border/60 text-accent rounded-md text-xs font-medium transition-colors duration-300">
                     Distributor
                   </span>
                 </div>

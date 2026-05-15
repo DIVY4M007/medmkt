@@ -15,6 +15,7 @@ import {
   Loader2,
   AlertTriangle,
   ShoppingCart,
+  Tag,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -30,6 +31,8 @@ interface CartItem {
   quantity: number;
   unitPrice: number;
   lineTotal: number;
+  discountAmount?: number;
+  discountPercent?: number;
   sellerOrgId: string;
   sellerOrg?: {
     id: string;
@@ -197,7 +200,7 @@ export default function CartPage() {
           data-testid="bulk-upload-btn"
         >
           <FileSpreadsheet className="size-4" />
-          Bulk upload (Excel)
+          Quick add
         </Button>
       </div>
 
@@ -224,12 +227,12 @@ export default function CartPage() {
         <div className="bg-card rounded-xl border border-border overflow-hidden">
           {/* Header row */}
           <div className="grid grid-cols-12 gap-2 px-4 py-3 bg-secondary text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            <div className="col-span-4">Product</div>
+            <div className="col-span-3">Product</div>
             <div className="col-span-2">Seller</div>
             <div className="col-span-2 text-center">Qty</div>
             <div className="col-span-1 text-right">Unit price</div>
             <div className="col-span-2 text-right">Line total</div>
-            <div className="col-span-1" />
+            <div className="col-span-2" />
           </div>
 
           {/* Rows */}
@@ -245,8 +248,14 @@ export default function CartPage() {
                   className="grid grid-cols-12 gap-2 px-4 py-3 border-t border-border items-center text-sm hover:bg-secondary/50 transition-colors"
                 >
                   {/* Product */}
-                  <div className="col-span-4 text-foreground font-medium truncate">
+                  <div className="col-span-3 text-foreground font-medium truncate">
                     {item.productName || item.name}
+                    {item.discountAmount && item.discountAmount > 0 && (
+                      <span className="ml-1.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <Tag className="size-2.5" />
+                        {item.discountPercent}% off
+                      </span>
+                    )}
                   </div>
 
                   {/* Seller */}
@@ -288,12 +297,15 @@ export default function CartPage() {
                   </div>
 
                   {/* Line total */}
-                  <div className="col-span-2 text-right text-foreground font-medium">
-                    {formatINR(item.lineTotal)}
+                  <div className="col-span-2 text-right">
+                    <div className="text-foreground font-medium">{formatINR(item.lineTotal)}</div>
+                    {item.discountAmount && item.discountAmount > 0 && (
+                      <div className="text-[10px] text-emerald-600 font-medium">−{formatINR(item.discountAmount)} saved</div>
+                    )}
                   </div>
 
                   {/* Delete */}
-                  <div className="col-span-1 flex justify-end">
+                  <div className="col-span-2 flex justify-end">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -316,11 +328,18 @@ export default function CartPage() {
 
           {/* Footer total */}
           <div className="grid grid-cols-12 gap-2 px-4 py-3 bg-secondary border-t border-border">
-            <div className="col-span-8 text-sm font-medium text-foreground">
+            <div className="col-span-6 text-sm font-medium text-foreground">
               Order total
             </div>
-            <div className="col-span-4 text-right text-sm font-semibold text-primary">
-              {formatINR(cart?.total ?? 0)}
+            <div className="col-span-6 text-right">
+              {items.some((i) => i.discountAmount && i.discountAmount > 0) && (
+                <div className="text-xs text-emerald-600 font-medium mb-0.5">
+                  Total saved: {formatINR(items.reduce((sum, i) => sum + (i.discountAmount || 0), 0))}
+                </div>
+              )}
+              <div className="text-sm font-semibold text-primary">
+                {formatINR(cart?.total ?? 0)}
+              </div>
             </div>
           </div>
         </div>

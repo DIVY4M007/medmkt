@@ -50,6 +50,8 @@ model Product {
   packagingQty    Int      @default(1)
   manufacturer    String?
   qualityMetadata String?  // JSON string: { material, plasticGrade, certifications[] }
+  discountPercent     Float?   // Discount percentage (e.g. 5 for 5%)
+  minOrderForDiscount Int?     // Minimum order quantity to qualify for discount
   sellerOrgId     String
   isActive        Boolean  @default(true)
   createdAt       DateTime @default(now())

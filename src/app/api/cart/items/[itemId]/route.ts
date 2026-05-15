@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { getUserFromRequest, priceForQty, sanitizeOrder } from '@/lib/auth-helpers';
+import { getUserFromRequest, priceForQty, calculateLineTotal, sanitizeOrder } from '@/lib/auth-helpers';
 
 export async function PATCH(
   request: NextRequest,
@@ -42,6 +42,8 @@ export async function PATCH(
       quantity: number;
       unitPrice: number;
       lineTotal: number;
+      discountAmount: number;
+      discountPercent: number;
       sellerOrgId: string;
     }> = JSON.parse(cart.items);
 
@@ -50,7 +52,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Item not found in cart' }, { status: 404 });
     }
 
-    // Get product for tier pricing
+    // Get product for tier pricing + discount
     const product = await db.product.findUnique({
       where: { id: itemId }
     });
@@ -59,11 +61,13 @@ export async function PATCH(
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    // Recalculate tier price and line total
-    const unitPrice = priceForQty(product.tierPricing, quantity);
+    // Recalculate tier price + discount and line total
+    const pricing = calculateLineTotal(product.tierPricing, quantity, product.discountPercent, product.minOrderForDiscount);
     items[itemIndex].quantity = quantity;
-    items[itemIndex].unitPrice = unitPrice;
-    items[itemIndex].lineTotal = unitPrice * quantity;
+    items[itemIndex].unitPrice = pricing.unitPrice;
+    items[itemIndex].lineTotal = pricing.lineTotal;
+    items[itemIndex].discountAmount = pricing.discountAmount;
+    items[itemIndex].discountPercent = pricing.appliedDiscountPercent;
 
     // Recalculate total
     const total = items.reduce((sum, item) => sum + item.lineTotal, 0);
@@ -123,6 +127,8 @@ export async function DELETE(
       quantity: number;
       unitPrice: number;
       lineTotal: number;
+      discountAmount: number;
+      discountPercent: number;
       sellerOrgId: string;
     }> = JSON.parse(cart.items);
 

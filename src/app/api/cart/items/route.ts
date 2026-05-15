@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { getUserFromRequest, priceForQty, sanitizeOrder } from '@/lib/auth-helpers';
+import { getUserFromRequest, priceForQty, calculateLineTotal, sanitizeOrder } from '@/lib/auth-helpers';
 
 export async function POST(request: NextRequest) {
   try {
@@ -61,28 +61,33 @@ export async function POST(request: NextRequest) {
       quantity: number;
       unitPrice: number;
       lineTotal: number;
+      discountAmount: number;
+      discountPercent: number;
       sellerOrgId: string;
     }> = JSON.parse(cart.items);
 
-    // Calculate tier price
-    const unitPrice = priceForQty(product.tierPricing, quantity);
-    const lineTotal = unitPrice * quantity;
+    // Calculate tier price + discount
+    const pricing = calculateLineTotal(product.tierPricing, quantity, product.discountPercent, product.minOrderForDiscount);
 
     // Check if product already in cart - merge
     const existingIndex = items.findIndex((item) => item.productId === productId);
     if (existingIndex >= 0) {
       const newQty = items[existingIndex].quantity + quantity;
-      const newUnitPrice = priceForQty(product.tierPricing, newQty);
+      const newPricing = calculateLineTotal(product.tierPricing, newQty, product.discountPercent, product.minOrderForDiscount);
       items[existingIndex].quantity = newQty;
-      items[existingIndex].unitPrice = newUnitPrice;
-      items[existingIndex].lineTotal = newUnitPrice * newQty;
+      items[existingIndex].unitPrice = newPricing.unitPrice;
+      items[existingIndex].lineTotal = newPricing.lineTotal;
+      items[existingIndex].discountAmount = newPricing.discountAmount;
+      items[existingIndex].discountPercent = newPricing.appliedDiscountPercent;
     } else {
       items.push({
         productId: product.id,
         name: product.name,
         quantity,
-        unitPrice,
-        lineTotal,
+        unitPrice: pricing.unitPrice,
+        lineTotal: pricing.lineTotal,
+        discountAmount: pricing.discountAmount,
+        discountPercent: pricing.appliedDiscountPercent,
         sellerOrgId: product.sellerOrgId
       });
     }

@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search');
     const sellerOrg = searchParams.get('sellerOrg');
     const sterility = searchParams.get('sterility');
+    const hasDiscount = searchParams.get('hasDiscount');
 
     const where: any = { isActive: true };
 
@@ -17,6 +18,9 @@ export async function GET(request: NextRequest) {
     if (sterility) where.sterility = sterility;
     if (search) {
       where.name = { contains: search, mode: 'insensitive' };
+    }
+    if (hasDiscount === 'true') {
+      where.discountPercent = { gt: 0 };
     }
 
     const products = await db.product.findMany({
@@ -46,7 +50,8 @@ export async function POST(request: NextRequest) {
     const {
       name, description, category, imageUrl, stock, unit,
       tierPricing, sterility, disposable, packagingQty,
-      manufacturer, qualityMetadata
+      manufacturer, qualityMetadata,
+      discountPercent, minOrderForDiscount
     } = body;
 
     if (!name) {
@@ -73,6 +78,8 @@ export async function POST(request: NextRequest) {
         packagingQty: packagingQty ?? 1,
         manufacturer: manufacturer || null,
         qualityMetadata: qualityMetadata ? JSON.stringify(qualityMetadata) : null,
+        discountPercent: discountPercent ?? null,
+        minOrderForDiscount: minOrderForDiscount ?? null,
         sellerOrgId: user.orgId
       },
       include: { sellerOrg: true }

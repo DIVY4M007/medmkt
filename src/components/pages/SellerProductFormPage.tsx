@@ -45,6 +45,8 @@ interface ProductForm {
   material: string;
   plasticGrade: string;
   certifications: string;
+  discountPercent: number;
+  minOrderForDiscount: number;
 }
 
 const emptyForm: ProductForm = {
@@ -62,6 +64,8 @@ const emptyForm: ProductForm = {
   material: '',
   plasticGrade: '',
   certifications: '',
+  discountPercent: 0,
+  minOrderForDiscount: 0,
 };
 
 export default function SellerProductFormPage() {
@@ -110,6 +114,8 @@ export default function SellerProductFormPage() {
           certifications: Array.isArray(qualityMeta.certifications)
             ? qualityMeta.certifications.join(', ')
             : '',
+          discountPercent: p.discountPercent ?? 0,
+          minOrderForDiscount: p.minOrderForDiscount ?? 0,
         });
       } catch (err) {
         console.error('Failed to fetch product:', err);
@@ -187,6 +193,8 @@ export default function SellerProductFormPage() {
       packagingQty: form.packagingQty,
       manufacturer: form.manufacturer.trim() || null,
       qualityMetadata: Object.keys(qualityMetadata).length > 0 ? qualityMetadata : null,
+      discountPercent: form.discountPercent > 0 ? form.discountPercent : null,
+      minOrderForDiscount: form.discountPercent > 0 && form.minOrderForDiscount > 0 ? form.minOrderForDiscount : null,
     };
 
     setSubmitting(true);
@@ -393,6 +401,57 @@ export default function SellerProductFormPage() {
               Add tier
             </Button>
           </div>
+        </div>
+
+        {/* Bulk discount section */}
+        <div className="bg-card rounded-xl border border-border p-6">
+          <p className="label-overline text-accent mb-1">Bulk discount</p>
+          <p className="text-xs text-muted-foreground mb-4">
+            Offer a discount when buyers order a minimum quantity. This is applied on top of tier pricing.
+          </p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="discount-percent" className="text-sm text-foreground">
+                Discount (%)
+              </Label>
+              <Input
+                id="discount-percent"
+                data-testid="input-discountPercent"
+                type="number"
+                min={0}
+                max={100}
+                step={0.5}
+                value={form.discountPercent || ''}
+                onChange={(e) =>
+                  updateField('discountPercent', parseFloat(e.target.value) || 0)
+                }
+                placeholder="e.g. 5"
+                className="mt-1.5 border-border"
+              />
+            </div>
+            <div>
+              <Label htmlFor="min-order-discount" className="text-sm text-foreground">
+                Min order qty for discount
+              </Label>
+              <Input
+                id="min-order-discount"
+                data-testid="input-minOrderForDiscount"
+                type="number"
+                min={0}
+                value={form.minOrderForDiscount || ''}
+                onChange={(e) =>
+                  updateField('minOrderForDiscount', parseInt(e.target.value) || 0)
+                }
+                placeholder="e.g. 50"
+                className="mt-1.5 border-border"
+              />
+            </div>
+          </div>
+          {form.discountPercent > 0 && form.minOrderForDiscount > 0 && (
+            <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-700">
+              Buyers ordering <span className="font-semibold">{form.minOrderForDiscount}+</span> units will receive a <span className="font-semibold">{form.discountPercent}%</span> discount on the tier price.
+            </div>
+          )}
         </div>
 
         {/* Consumable specifications section */}

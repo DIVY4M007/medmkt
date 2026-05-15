@@ -60,14 +60,14 @@
   --secondary-foreground: #0F172A;
   --muted: #F1F5F9;
   --muted-foreground: #64748B;
-  --accent: #8B6B4A;
+  --accent: #7A6452;
   --accent-foreground: #FFFFFF;
   --destructive: #DC2626;
   --border: #E2E8F0;
   --input: #CBD5E1;
   --ring: #3D6B6B;
   --chart-1: #3D6B6B;
-  --chart-2: #8B6B4A;
+  --chart-2: #7A6452;
   --chart-3: #5A8A7A;
   --chart-4: #C4A67A;
   --chart-5: #4A7C6B;
@@ -94,14 +94,14 @@
   --secondary-foreground: #F1F5F9;
   --muted: #1E293B;
   --muted-foreground: #94A3B8;
-  --accent: #B8956A;
+  --accent: #9A8672;
   --accent-foreground: #0B1120;
   --destructive: #EF4444;
   --border: #1E293B;
   --input: #334155;
   --ring: #5A8A7A;
   --chart-1: #5A8A7A;
-  --chart-2: #B8956A;
+  --chart-2: #9A8672;
   --chart-3: #7AA898;
   --chart-4: #D4B88A;
   --chart-5: #6B9A88;
@@ -325,13 +325,13 @@
 .gradient-mesh {
   background:
     radial-gradient(at 20% 80%, rgba(61, 107, 107, 0.07) 0%, transparent 50%),
-    radial-gradient(at 80% 20%, rgba(139, 107, 74, 0.05) 0%, transparent 50%),
+    radial-gradient(at 80% 20%, rgba(122, 100, 82, 0.05) 0%, transparent 50%),
     radial-gradient(at 40% 40%, rgba(90, 138, 122, 0.04) 0%, transparent 50%);
 }
 
 .dark .gradient-mesh {
   background:
     radial-gradient(at 20% 80%, rgba(90, 138, 122, 0.08) 0%, transparent 50%),
-    radial-gradient(at 80% 20%, rgba(184, 149, 106, 0.06) 0%, transparent 50%),
+    radial-gradient(at 80% 20%, rgba(154, 134, 114, 0.06) 0%, transparent 50%),
     radial-gradient(at 40% 40%, rgba(122, 168, 152, 0.04) 0%, transparent 50%);
 }

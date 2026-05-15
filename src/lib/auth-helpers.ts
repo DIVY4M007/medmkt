@@ -39,6 +39,30 @@ export function priceForQty(tierPricingJson: string | null, qty: number): number
   return chosen;
 }
 
+/**
+ * Calculate line total with tier pricing + bulk discount applied.
+ * Returns { unitPrice, lineTotal, discountAmount, discountPercent }
+ */
+export function calculateLineTotal(
+  tierPricingJson: string | null,
+  qty: number,
+  discountPercent: number | null | undefined,
+  minOrderForDiscount: number | null | undefined,
+): { unitPrice: number; lineTotal: number; discountAmount: number; appliedDiscountPercent: number } {
+  const unitPrice = priceForQty(tierPricingJson, qty);
+  let lineTotal = unitPrice * qty;
+  let discountAmount = 0;
+  let appliedDiscountPercent = 0;
+
+  if (discountPercent && discountPercent > 0 && minOrderForDiscount && qty >= minOrderForDiscount) {
+    appliedDiscountPercent = discountPercent;
+    discountAmount = lineTotal * (discountPercent / 100);
+    lineTotal = lineTotal - discountAmount;
+  }
+
+  return { unitPrice, lineTotal, discountAmount, appliedDiscountPercent };
+}
+
 export function sanitizeUser(user: any) {
   if (!user) return user;
   const { passwordHash, ...safe } = user;

@@ -62,6 +62,8 @@ export async function PUT(
     if (body.manufacturer !== undefined) updateData.manufacturer = body.manufacturer;
     if (body.qualityMetadata !== undefined) updateData.qualityMetadata = JSON.stringify(body.qualityMetadata);
     if (body.isActive !== undefined) updateData.isActive = body.isActive;
+    if (body.discountPercent !== undefined) updateData.discountPercent = body.discountPercent;
+    if (body.minOrderForDiscount !== undefined) updateData.minOrderForDiscount = body.minOrderForDiscount;
 
     const product = await db.product.update({
       where: { id },

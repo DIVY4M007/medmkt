@@ -24,6 +24,7 @@ import {
   Layers,
   AlertTriangle,
   Loader2,
+  Tag,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -59,6 +60,8 @@ interface Product {
   packagingQty: number;
   manufacturer: string | null;
   qualityMetadata: string | null;
+  discountPercent: number | null;
+  minOrderForDiscount: number | null;
   sellerOrgId: string;
   sellerOrg: SellerOrg;
   isActive: boolean;
@@ -140,8 +143,16 @@ export default function ProductDetailPage() {
     : null;
 
   const unitPrice = priceForQty(product.tierPricing, quantity);
-  const lineTotal = unitPrice * quantity;
+  let lineTotal = unitPrice * quantity;
   const basePrice = sortedTiers.length > 0 ? sortedTiers[0].unitPrice : 0;
+
+  // Apply discount if applicable
+  const hasDiscount = product.discountPercent && product.discountPercent > 0 && product.minOrderForDiscount;
+  const discountApplies = hasDiscount && quantity >= (product.minOrderForDiscount ?? Infinity);
+  const discountAmount = discountApplies ? lineTotal * (product.discountPercent! / 100) : 0;
+  if (discountApplies) {
+    lineTotal = lineTotal - discountAmount;
+  }
 
   const canAddToCart =
     user &&
@@ -312,6 +323,18 @@ export default function ProductDetailPage() {
                   })}
                 </tbody>
               </table>
+              {/* Discount info */}
+              {hasDiscount && (
+                <div className={`px-4 py-2.5 border-t border-border flex items-center gap-2 ${discountApplies ? 'bg-emerald-50' : 'bg-secondary/40'}`}>
+                  <Tag className="size-4 text-emerald-600" />
+                  <span className={`text-xs font-medium ${discountApplies ? 'text-emerald-700' : 'text-muted-foreground'}`}>
+                    {discountApplies
+                      ? `${product.discountPercent}% bulk discount applied! (ordered ${quantity} ≥ ${product.minOrderForDiscount} min)`
+                      : `${product.discountPercent}% discount available on orders of ${product.minOrderForDiscount}+ units`
+                    }
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
@@ -413,9 +436,16 @@ export default function ProductDetailPage() {
                 <span className="text-xs text-muted-foreground font-medium">
                   Line total
                 </span>
-                <span className="text-sm font-semibold text-primary">
-                  {formatINR(lineTotal)}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-primary">
+                    {formatINR(lineTotal)}
+                  </span>
+                  {discountApplies && discountAmount > 0 && (
+                    <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 rounded px-1.5 py-0.5">
+                      −{formatINR(discountAmount)} saved
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="flex-1" />
               <Button
