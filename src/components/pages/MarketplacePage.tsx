@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useAppStore } from '@/lib/store';
 import { api } from '@/lib/api-client';
 import { formatINR, CATEGORY_LABELS, CATEGORY_OPTIONS } from '@/lib/format';
-import { Search, SlidersHorizontal, ShieldCheck, Loader2 } from 'lucide-react';
+import { Search, SlidersHorizontal, ShieldCheck } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -92,7 +92,7 @@ export default function MarketplacePage() {
             placeholder="Search products..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 border-[#D5CEBD] bg-[#FDFBF7]"
+            className="pl-9 border-[#D5CEBD] bg-[#FDFBF7] rounded-xl"
           />
         </div>
       </div>
@@ -101,7 +101,7 @@ export default function MarketplacePage() {
       <div className="flex flex-wrap items-center gap-3">
         <SlidersHorizontal className="size-4 text-[#5C635F] hidden sm:block" />
         <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger data-testid="filter-category" className="w-[180px] border-[#D5CEBD] bg-[#FDFBF7]">
+          <SelectTrigger data-testid="filter-category" className="w-[180px] border-[#D5CEBD] bg-[#FDFBF7] rounded-lg">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -115,7 +115,7 @@ export default function MarketplacePage() {
         </Select>
 
         <Select value={sterility} onValueChange={setSterility}>
-          <SelectTrigger data-testid="filter-sterility" className="w-[160px] border-[#D5CEBD] bg-[#FDFBF7]">
+          <SelectTrigger data-testid="filter-sterility" className="w-[160px] border-[#D5CEBD] bg-[#FDFBF7] rounded-lg">
             <SelectValue placeholder="Sterility" />
           </SelectTrigger>
           <SelectContent>
@@ -144,17 +144,36 @@ export default function MarketplacePage() {
 
       {/* Product Grid */}
       {loading ? (
-        <div className="flex items-center justify-center min-h-[40vh]">
-          <Loader2 className="size-8 animate-spin text-[#4A675B]" />
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex-1 space-y-2">
+              <div className="skeleton h-8 w-48" />
+              <div className="skeleton h-4 w-32" />
+            </div>
+            <div className="skeleton h-10 w-80 rounded-md" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[1,2,3,4,5,6].map(i => (
+              <div key={i} className="border border-[#D5CEBD] rounded-xl overflow-hidden">
+                <div className="skeleton aspect-[4/3]" />
+                <div className="p-4 space-y-2">
+                  <div className="skeleton h-3 w-20" />
+                  <div className="skeleton h-5 w-3/4" />
+                  <div className="skeleton h-3 w-1/2" />
+                  <div className="skeleton h-4 w-24 mt-2" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       ) : products.length === 0 ? (
-        <div className="flex flex-col items-center justify-center min-h-[40vh] text-[#5C635F]">
+        <div className="flex flex-col items-center justify-center min-h-[40vh] text-[#5C635F] animate-fade-in-up rounded-xl">
           <Search className="size-12 mb-4 opacity-30" />
           <p className="text-lg font-heading font-semibold">No products found</p>
           <p className="text-sm mt-1">Try adjusting your filters or search</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
           {products.map((product) => {
             const { base, best } = getTierInfo(product.tierPricing);
             const categoryLabel = CATEGORY_LABELS[product.category] || product.category;
@@ -165,7 +184,7 @@ export default function MarketplacePage() {
                 key={product.id}
                 data-testid={`product-card-${product.id}`}
                 onClick={() => navigate('product-detail', { id: product.id })}
-                className="border border-[#D5CEBD] rounded-md bg-[#FDFBF7] hover:-translate-y-1 hover:shadow-lg transition-all text-left overflow-hidden group cursor-pointer"
+                className="border border-[#D5CEBD] rounded-xl bg-[#FDFBF7] card-hover transition-all text-left overflow-hidden group cursor-pointer"
               >
                 {/* Product Image */}
                 <div className="relative aspect-[4/3] bg-[#EAE5D9] overflow-hidden">
@@ -173,7 +192,7 @@ export default function MarketplacePage() {
                     <img
                       src={product.imageUrl}
                       alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
@@ -181,7 +200,7 @@ export default function MarketplacePage() {
                     </div>
                   )}
                   {isSterile && (
-                    <span className="absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold tracking-wide bg-white/90 text-[#4A675B] backdrop-blur-sm shadow-sm">
+                    <span className="absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-xl text-[10px] font-semibold tracking-wide bg-white/90 text-[#4A675B] backdrop-blur-sm shadow-sm">
                       <ShieldCheck className="size-3" />
                       Sterile
                     </span>

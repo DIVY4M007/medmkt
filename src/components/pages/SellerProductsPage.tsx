@@ -79,7 +79,7 @@ export default function SellerProductsPage() {
         <Button
           data-testid="btn-add-product"
           onClick={() => navigate('seller-product-form')}
-          className="bg-[#4A675B] hover:bg-[#3D564C] text-white"
+          className="bg-[#4A675B] hover:bg-[#3D564C] text-white rounded-lg"
         >
           <Plus className="h-4 w-4" />
           Add product
@@ -92,14 +92,14 @@ export default function SellerProductsPage() {
           <Loader2 className="h-6 w-6 animate-spin text-[#4A675B]" />
         </div>
       ) : products.length === 0 ? (
-        <div className="rounded-md border-2 border-dashed border-[#D5CEBD] p-12 text-center">
+        <div className="rounded-2xl border-2 border-dashed border-[#D5CEBD] p-12 text-center">
           <Package className="mx-auto mb-3 h-10 w-10 text-[#D5CEBD]" />
           <p className="text-sm text-[#5C635F]">
             You haven&apos;t listed any products yet.
           </p>
         </div>
       ) : (
-        <div className="rounded-md border border-[#D5CEBD] overflow-hidden">
+        <div className="rounded-xl border border-[#D5CEBD] overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-[#F4F1EA] border-b border-[#D5CEBD]">

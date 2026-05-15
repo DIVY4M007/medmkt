@@ -5,7 +5,7 @@ import { useAppStore } from '@/lib/store';
 import { api } from '@/lib/api-client';
 import { formatINR, formatDate, STATUS_FLOW, ORG_TYPE_LABELS } from '@/lib/format';
 import StatusBadge from '@/components/StatusBadge';
-import { Store, ShoppingCart, Package, Users, ArrowRight, ChevronRight, Loader2 } from 'lucide-react';
+import { Store, ShoppingCart, Package, Users, ArrowRight, ChevronRight } from 'lucide-react';
 
 interface Product { id: string; name: string; category: string; [key: string]: unknown }
 interface OrderItem { productName: string; quantity: number; unitPrice: number; lineTotal: number; [key: string]: unknown }
@@ -127,8 +127,20 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="size-8 animate-spin text-[#4A675B]" />
+      <div className="space-y-8">
+        <div className="space-y-2">
+          <div className="skeleton h-8 w-48" />
+          <div className="skeleton h-4 w-64" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1,2,3,4].map(i => (
+            <div key={i} className="border border-[#D5CEBD] rounded-xl p-5 space-y-3">
+              <div className="skeleton h-10 w-10 rounded-lg" />
+              <div className="skeleton h-8 w-20" />
+              <div className="skeleton h-4 w-32" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -136,7 +148,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
+      <div className="bg-gradient-to-r from-[#4A675B]/5 to-transparent -mx-1 px-1 pt-1 pb-2 rounded-xl">
         <h1 className="font-heading text-2xl sm:text-3xl font-semibold text-[#1F2321]">
           Hello, {firstName}
         </h1>
@@ -146,16 +158,16 @@ export default function DashboardPage() {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in-up stagger-children">
         {statCards.map((card) => (
           <button
             key={card.testid}
             data-testid={card.testid}
             onClick={card.onClick}
-            className="border border-[#D5CEBD] rounded-md p-5 bg-[#FDFBF7] hover:-translate-y-1 hover:shadow-lg transition-all text-left group cursor-pointer"
+            className="border-2 border-[#D5CEBD]/60 rounded-xl p-5 bg-[#FDFBF7] card-hover btn-press transition-all text-left group cursor-pointer"
           >
             <div className="flex items-start justify-between">
-              <div className="p-2 rounded-lg bg-[#F4F1EA]">{card.icon}</div>
+              <div className="p-2 rounded-xl bg-[#F4F1EA]">{card.icon}</div>
               <ArrowRight className="size-4 text-[#5C635F] opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
             <p className="mt-3 text-2xl font-heading font-semibold text-[#1F2321]">{card.value}</p>
@@ -168,7 +180,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Order Lifecycle Flow */}
-      <div className="border border-[#D5CEBD] rounded-md p-5 bg-[#FDFBF7]">
+      <div className="border border-[#D5CEBD] rounded-xl p-5 bg-[#FDFBF7] card-hover">
         <h2 className="font-heading text-lg font-semibold text-[#1F2321] mb-4">Order lifecycle</h2>
         <div className="flex flex-wrap items-center gap-2">
           {STATUS_FLOW.map((status, i) => (
@@ -184,7 +196,7 @@ export default function DashboardPage() {
 
       {/* Recent Purchase Orders (Buyer) */}
       {isBuyer && (
-        <div className="border border-[#D5CEBD] rounded-md bg-[#FDFBF7]">
+        <div className="border border-[#D5CEBD] rounded-xl bg-[#FDFBF7]">
           <div className="p-5 border-b border-[#D5CEBD] flex items-center justify-between">
             <h2 className="font-heading text-lg font-semibold text-[#1F2321]">Recent purchase orders</h2>
             <button
@@ -232,7 +244,7 @@ export default function DashboardPage() {
 
       {/* Recent Sales Orders (Seller) */}
       {isSeller && (
-        <div className="border border-[#D5CEBD] rounded-md bg-[#FDFBF7]">
+        <div className="border border-[#D5CEBD] rounded-xl bg-[#FDFBF7]">
           <div className="p-5 border-b border-[#D5CEBD] flex items-center justify-between">
             <h2 className="font-heading text-lg font-semibold text-[#1F2321]">Recent sales orders</h2>
             <button

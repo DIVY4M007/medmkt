@@ -171,7 +171,7 @@ export default function CartPage() {
         </h1>
         <Button
           variant="outline"
-          className="border-[#D5CEBD] text-[#5C635F] hover:bg-[#F4F1EA] gap-1.5"
+          className="border-[#D5CEBD] text-[#5C635F] hover:bg-[#F4F1EA] gap-1.5 rounded-lg"
           onClick={() => navigate('cart-upload')}
           data-testid="bulk-upload-btn"
         >
@@ -182,12 +182,12 @@ export default function CartPage() {
 
       {/* Empty cart */}
       {items.length === 0 && (
-        <div className="border-2 border-dashed border-[#D5CEBD] rounded-lg py-16 flex flex-col items-center justify-center gap-4">
+        <div className="border-2 border-dashed border-[#D5CEBD] rounded-2xl py-16 flex flex-col items-center justify-center gap-4">
           <ShoppingBag className="size-12 text-[#D5CEBD]" />
           <p className="text-[#5C635F] text-sm">Your cart is empty</p>
           <Button
             onClick={() => navigate('marketplace')}
-            className="bg-[#4A675B] hover:bg-[#3D564C] text-white"
+            className="bg-[#4A675B] hover:bg-[#3D564C] text-white btn-press"
             data-testid="browse-marketplace-btn"
           >
             <ShoppingCart className="size-4" />
@@ -198,7 +198,7 @@ export default function CartPage() {
 
       {/* Cart table */}
       {items.length > 0 && (
-        <div className="border border-[#D5CEBD] rounded-md overflow-hidden">
+        <div className="border border-[#D5CEBD] rounded-xl overflow-hidden">
           {/* Table header */}
           <div className="grid grid-cols-12 gap-2 px-4 py-3 bg-[#F4F1EA] text-xs font-medium text-[#5C635F]">
             <div className="col-span-4">Product</div>
@@ -296,7 +296,7 @@ export default function CartPage() {
           <Button
             onClick={handleSubmit}
             disabled={submitting}
-            className="bg-[#C47055] hover:bg-[#B05F47] text-white gap-1.5 px-6"
+            className="bg-[#C47055] hover:bg-[#B05F47] text-white gap-1.5 px-6 rounded-xl btn-press"
             data-testid="submit-order-btn"
           >
             {submitting ? (

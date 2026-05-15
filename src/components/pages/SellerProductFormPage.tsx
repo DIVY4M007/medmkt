@@ -229,7 +229,7 @@ export default function SellerProductFormPage() {
 
       <div className="space-y-6">
         {/* Basics section */}
-        <div className="rounded-md border border-[#D5CEBD] bg-[#FDFBF7] p-6">
+        <div className="rounded-xl border border-[#D5CEBD] bg-[#FDFBF7] p-6">
           <p className="label-overline text-[#5C635F] mb-4">Basics</p>
           <div className="space-y-4">
             <div>
@@ -327,7 +327,7 @@ export default function SellerProductFormPage() {
         </div>
 
         {/* Tier pricing section */}
-        <div className="rounded-md border border-[#D5CEBD] bg-[#FDFBF7] p-6">
+        <div className="rounded-xl border border-[#D5CEBD] bg-[#FDFBF7] p-6">
           <p className="label-overline text-[#5C635F] mb-4">Tier pricing</p>
           <div className="space-y-3">
             {form.tierPricing.map((tier, idx) => (
@@ -388,7 +388,7 @@ export default function SellerProductFormPage() {
         </div>
 
         {/* Consumable specifications section */}
-        <div className="rounded-md border border-[#D5CEBD] bg-[#FDFBF7] p-6">
+        <div className="rounded-xl border border-[#D5CEBD] bg-[#FDFBF7] p-6">
           <p className="label-overline text-[#5C635F] mb-4">
             Consumable specifications
           </p>
@@ -503,7 +503,7 @@ export default function SellerProductFormPage() {
           data-testid="btn-submit-product"
           onClick={handleSubmit}
           disabled={submitting}
-          className="w-full bg-[#4A675B] hover:bg-[#3D564C] text-white"
+          className="bg-[#4A675B] hover:bg-[#3D564C] text-white rounded-xl btn-press"
         >
           {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
           {isEditing ? 'Save changes' : 'Create consumable'}

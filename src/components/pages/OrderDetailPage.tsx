@@ -146,7 +146,7 @@ export default function OrderDetailPage() {
       </div>
 
       {/* Lifecycle section */}
-      <div className="mb-6 rounded-md border border-[#D5CEBD] bg-[#F4F1EA] p-5">
+      <div className="mb-6 rounded-xl border border-[#D5CEBD] bg-[#F4F1EA] p-5">
         <p className="label-overline text-[#5C635F] mb-3">Lifecycle</p>
         <div className="flex flex-wrap items-center gap-2">
           {STATUS_FLOW.map((status, idx) => {
@@ -175,7 +175,7 @@ export default function OrderDetailPage() {
       </div>
 
       {/* Items table */}
-      <div className="mb-6 rounded-md border border-[#D5CEBD] overflow-hidden">
+      <div className="mb-6 rounded-xl border border-[#D5CEBD] overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-[#F4F1EA] border-b border-[#D5CEBD]">
@@ -221,7 +221,7 @@ export default function OrderDetailPage() {
 
       {/* Rejection reason */}
       {order.status === 'rejected' && order.rejectionReason && (
-        <div className="mb-6 rounded-md border border-red-200 bg-red-50 p-4">
+        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4">
           <div className="flex items-start gap-2">
             <AlertTriangle className="mt-0.5 h-4 w-4 text-red-600" />
             <div>
@@ -234,7 +234,7 @@ export default function OrderDetailPage() {
 
       {/* Actions */}
       {(canApprove || canPay || canDeliver) && (
-        <div className="rounded-md border border-[#D5CEBD] bg-[#FDFBF7] p-5">
+        <div className="rounded-xl border border-[#D5CEBD] bg-[#FDFBF7] p-5">
           <p className="label-overline text-[#5C635F] mb-3">Actions</p>
           <div className="flex flex-wrap items-start gap-3">
             {canApprove && (
@@ -243,7 +243,7 @@ export default function OrderDetailPage() {
                   data-testid="btn-approve"
                   onClick={() => handleAction('approve')}
                   disabled={actionLoading}
-                  className="bg-[#4A675B] hover:bg-[#3D564C] text-white"
+                  className="bg-[#4A675B] hover:bg-[#3D564C] text-white btn-press"
                 >
                   {actionLoading ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -255,7 +255,7 @@ export default function OrderDetailPage() {
                   variant="outline"
                   onClick={() => setShowRejectBox(!showRejectBox)}
                   disabled={actionLoading}
-                  className="border-red-300 text-red-700 hover:bg-red-50"
+                  className="border-red-300 text-red-700 hover:bg-red-50 btn-press"
                 >
                   Reject
                 </Button>
@@ -266,7 +266,7 @@ export default function OrderDetailPage() {
                 data-testid="btn-pay"
                 onClick={() => handleAction('pay')}
                 disabled={actionLoading}
-                className="bg-[#4A675B] hover:bg-[#3D564C] text-white"
+                className="bg-[#4A675B] hover:bg-[#3D564C] text-white btn-press"
               >
                 {actionLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -279,7 +279,7 @@ export default function OrderDetailPage() {
                 data-testid="btn-deliver"
                 onClick={() => handleAction('deliver')}
                 disabled={actionLoading}
-                className="bg-[#4A675B] hover:bg-[#3D564C] text-white"
+                className="bg-[#4A675B] hover:bg-[#3D564C] text-white btn-press"
               >
                 {actionLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -291,7 +291,7 @@ export default function OrderDetailPage() {
 
           {/* Rejection reason input */}
           {showRejectBox && (
-            <div className="mt-4 space-y-3 rounded-md border border-red-200 bg-red-50 p-4">
+            <div className="mt-4 space-y-3 rounded-xl border border-red-200 bg-red-50 p-4">
               <label className="text-sm font-medium text-red-800">
                 Reason for rejection
               </label>

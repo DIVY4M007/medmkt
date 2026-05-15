@@ -95,8 +95,18 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="size-8 animate-spin text-[#4A675B]" />
+      <div className="max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        <div className="skeleton h-4 w-24 mb-6" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="skeleton aspect-[4/3] rounded-xl" />
+          <div className="space-y-4">
+            <div className="skeleton h-4 w-24" />
+            <div className="skeleton h-8 w-3/4" />
+            <div className="skeleton h-4 w-1/2" />
+            <div className="skeleton h-32 w-full rounded-xl" />
+            <div className="skeleton h-24 w-full rounded-xl" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -165,7 +175,7 @@ export default function ProductDetailPage() {
       {/* Back link */}
       <button
         onClick={() => navigate('marketplace')}
-        className="text-[#4A675B] hover:underline text-sm mb-6 inline-flex items-center gap-1 transition-colors"
+        className="text-[#4A675B] hover:text-[#3D564C] text-sm mb-6 inline-flex items-center gap-1 transition-colors"
         data-testid="back-link"
       >
         <ArrowLeft className="size-4" /> Marketplace
@@ -174,7 +184,7 @@ export default function ProductDetailPage() {
       {/* Grid: Image + Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left: Product Image */}
-        <div className="aspect-[4/3] bg-[#EAE5D9] rounded-lg overflow-hidden flex items-center justify-center">
+        <div className="aspect-[4/3] bg-[#EAE5D9] rounded-2xl overflow-hidden flex items-center justify-center">
           {product.imageUrl ? (
             <img
               src={product.imageUrl}
@@ -252,7 +262,7 @@ export default function ProductDetailPage() {
 
           {/* Tier Pricing Table */}
           {sortedTiers.length > 0 && (
-            <div className="border border-[#D5CEBD] rounded-md overflow-hidden">
+            <div className="border border-[#D5CEBD] rounded-xl overflow-hidden">
               <div className="flex items-center justify-between px-4 py-2.5 bg-[#F4F1EA]">
                 <span className="text-sm font-medium text-[#1F2321]">
                   Tier pricing
@@ -368,7 +378,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Cart Actions */}
-          <div className="bg-[#F4F1EA] border border-[#D5CEBD] rounded-md p-5">
+          <div className="bg-[#F4F1EA] border border-[#D5CEBD] rounded-xl p-5">
             <div className="flex flex-wrap items-end gap-4">
               <div className="flex flex-col gap-1.5">
                 <label

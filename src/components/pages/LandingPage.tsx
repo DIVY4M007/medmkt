@@ -43,7 +43,7 @@ export default function LandingPage() {
               Sign in
             </Button>
             <Button
-              className="bg-[#4A675B] hover:bg-[#3D564C] text-white rounded-md"
+              className="bg-[#4A675B] hover:bg-[#3D564C] text-white rounded-md btn-press"
               data-testid="nav-create-account"
               onClick={() => navigate('register-portal')}
             >
@@ -56,7 +56,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="flex-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center animate-fade-in-up">
             {/* Left Column */}
             <div className="lg:col-span-7 flex flex-col gap-6">
               <span className="label-overline text-[#5C635F]">
@@ -76,7 +76,7 @@ export default function LandingPage() {
               <div className="flex flex-wrap gap-3 mt-2">
                 <Button
                   size="lg"
-                  className="bg-[#4A675B] hover:bg-[#3D564C] text-white rounded-md"
+                  className="bg-[#4A675B] hover:bg-[#3D564C] text-white rounded-md btn-press"
                   data-testid="hero-get-started"
                   onClick={() => navigate('register-portal')}
                 >
@@ -86,7 +86,7 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-[#D5CEBD] text-[#4A675B] hover:bg-[#F4F1EA] rounded-md"
+                  className="border-[#D5CEBD] text-[#4A675B] hover:bg-[#F4F1EA] rounded-md btn-press"
                   data-testid="hero-signin"
                   onClick={() => navigate('login-portal')}
                 >
@@ -127,7 +127,7 @@ export default function LandingPage() {
 
             {/* Right Column */}
             <div className="lg:col-span-5 relative">
-              <div className="relative rounded-xl overflow-hidden shadow-2xl">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                 <img
                   src="https://images.unsplash.com/photo-1710074213379-2a9c2653046a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NDh8MHwxfHNlYXJjaHwyfHxob3NwaXRhbCUyMGJlZHxlbnwwfHx8fDE3Nzc4NTE1MDh8MA&ixlib=rb-4.1.0&q=85"
                   alt="Modern hospital facility"
@@ -137,7 +137,7 @@ export default function LandingPage() {
               </div>
 
               {/* Floating Card */}
-              <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm border border-[#D5CEBD] rounded-lg p-4 shadow-lg">
+              <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm border border-[#D5CEBD] rounded-lg p-4 shadow-lg card-hover">
                 <p className="text-xs text-[#5C635F] mb-2 font-medium">
                   Order lifecycle
                 </p>
@@ -174,13 +174,13 @@ export default function LandingPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-children">
             {/* Feature 1 */}
-            <div className="bg-[#FDFBF7] border border-[#D5CEBD] rounded-md p-6 hover:-translate-y-1 hover:shadow-lg transition-all">
+            <div className="bg-[#FDFBF7] border-2 border-[#D5CEBD] rounded-xl p-8 card-hover">
               <div className="w-12 h-12 rounded-md bg-[#4A675B]/10 flex items-center justify-center mb-4">
                 <Layers className="w-6 h-6 text-[#4A675B]" />
               </div>
-              <h3 className="font-heading text-lg font-semibold text-[#1F2321] mb-2">
+              <h3 className="font-heading text-lg font-bold text-[#1F2321] mb-2">
                 Tier-based pricing
               </h3>
               <p className="text-sm text-[#5C635F] leading-relaxed">
@@ -191,11 +191,11 @@ export default function LandingPage() {
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-[#FDFBF7] border border-[#D5CEBD] rounded-md p-6 hover:-translate-y-1 hover:shadow-lg transition-all">
+            <div className="bg-[#FDFBF7] border-2 border-[#D5CEBD] rounded-xl p-8 card-hover">
               <div className="w-12 h-12 rounded-md bg-[#4A675B]/10 flex items-center justify-center mb-4">
                 <ShieldCheck className="w-6 h-6 text-[#4A675B]" />
               </div>
-              <h3 className="font-heading text-lg font-semibold text-[#1F2321] mb-2">
+              <h3 className="font-heading text-lg font-bold text-[#1F2321] mb-2">
                 Role-based approvals
               </h3>
               <p className="text-sm text-[#5C635F] leading-relaxed">
@@ -205,11 +205,11 @@ export default function LandingPage() {
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-[#FDFBF7] border border-[#D5CEBD] rounded-md p-6 hover:-translate-y-1 hover:shadow-lg transition-all">
+            <div className="bg-[#FDFBF7] border-2 border-[#D5CEBD] rounded-xl p-8 card-hover">
               <div className="w-12 h-12 rounded-md bg-[#4A675B]/10 flex items-center justify-center mb-4">
                 <BadgeCheck className="w-6 h-6 text-[#4A675B]" />
               </div>
-              <h3 className="font-heading text-lg font-semibold text-[#1F2321] mb-2">
+              <h3 className="font-heading text-lg font-bold text-[#1F2321] mb-2">
                 Quality metadata
               </h3>
               <p className="text-sm text-[#5C635F] leading-relaxed">
