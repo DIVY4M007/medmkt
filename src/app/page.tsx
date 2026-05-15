@@ -104,9 +104,9 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
     : '??';
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="h-screen bg-background flex overflow-hidden">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-sidebar border-r border-sidebar-border">
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-sidebar border-r border-sidebar-border shrink-0">
         {/* Logo */}
         <div className="h-16 flex items-center gap-2.5 px-6 border-b border-sidebar-border shrink-0">
           <div className="w-8 h-8 rounded-lg bg-sidebar-primary flex items-center justify-center">
