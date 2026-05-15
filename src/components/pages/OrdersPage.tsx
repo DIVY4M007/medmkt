@@ -5,8 +5,7 @@ import { useAppStore } from '@/lib/store';
 import { api } from '@/lib/api-client';
 import { formatINR, formatDate } from '@/lib/format';
 import StatusBadge from '@/components/StatusBadge';
-import { Button } from '@/components/ui/button';
-import { Loader2, FileText } from 'lucide-react';
+import { FileText } from 'lucide-react';
 
 interface OrderItem {
   product?: string;
@@ -74,7 +73,7 @@ export default function OrdersPage() {
 
       {/* Tabs */}
       {isBoth && (
-        <div className="mb-6 flex gap-1 rounded-md border border-[#D5CEBD] p-1 w-fit">
+        <div className="mb-6 flex gap-1 rounded-lg border border-[#D5CEBD] p-1 w-fit">
           <button
             data-testid="tab-purchases"
             onClick={() => handleTabChange('buyer')}
@@ -102,16 +101,18 @@ export default function OrdersPage() {
 
       {/* Content */}
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-6 w-6 animate-spin text-[#4A675B]" />
+        <div className="space-y-3">
+          {[1,2,3,4,5].map(i => (
+            <div key={i} className="skeleton h-14 w-full rounded-xl" />
+          ))}
         </div>
       ) : orders.length === 0 ? (
-        <div className="rounded-md border-2 border-dashed border-[#D5CEBD] p-12 text-center">
+        <div className="rounded-2xl border-2 border-dashed border-[#D5CEBD] p-12 text-center">
           <FileText className="mx-auto mb-3 h-10 w-10 text-[#D5CEBD]" />
           <p className="text-sm text-[#5C635F]">No orders to show</p>
         </div>
       ) : (
-        <div className="rounded-md border border-[#D5CEBD] overflow-hidden">
+        <div className="rounded-xl border border-[#D5CEBD] overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-[#F4F1EA] border-b border-[#D5CEBD]">
