@@ -112,20 +112,13 @@ async function main() {
   console.log('✅ Users created');
 
   // ─── Products ──────────────────────────────────────────────────────
-  const imgConsumables =
-    'https://images.unsplash.com/photo-1631980838946-755ba8443ab7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTV8MHwxfHNlYXJjaHwxfHxwaGFybWFjeSUyMG1lZGljaW5lc3xlbnwwfHx8fDE3Nzc4NTE1MDl8MA&ixlib=rb-4.1.0&q=85';
-  const imgEquipment =
-    'https://images.unsplash.com/photo-1664902265139-934219cee42f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwyfHxzdXJnZXJ5JTIwdG9vbHN8ZW58MHx8fHwxNzc3ODUxNTA4fDA&ixlib=rb-4.1.0&q=85';
-  const imgConsumablesAlt =
-    'https://images.unsplash.com/photo-1746842421936-461e16dd8238?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwxfHxzdXJnZXJ5JTIwdG9vbHN8ZW58MHx8fHwxNzc3ODUxNTA4fDA&ixlib=rb-4.1.0&q=85';
-
   const products = [
     {
       name: 'Surgical Gloves (Latex-Free)',
       description:
         'Premium nitrile surgical gloves, latex-free, powder-free. Textured fingertips for superior grip. Ambidextrous design for easy donning.',
       category: 'gloves',
-      imageUrl: imgConsumables,
+      imageUrl: '/products/gloves.png',
       stock: 500,
       unit: 'box',
       tierPricing: JSON.stringify([
@@ -150,7 +143,7 @@ async function main() {
       description:
         'Sterile single-use 5ml syringes with Luer lock tip. Clear barrel with graduated markings. Compatible with standard needles.',
       category: 'syringes',
-      imageUrl: imgConsumablesAlt,
+      imageUrl: '/products/syringes.png',
       stock: 1000,
       unit: 'box',
       tierPricing: JSON.stringify([
@@ -175,7 +168,7 @@ async function main() {
       description:
         'N95 respiratory mask with 5-layer filtration. Adjustable nose bridge, soft ear loops. ≥95% bacterial filtration efficiency.',
       category: 'surgical_masks',
-      imageUrl: imgEquipment,
+      imageUrl: '/products/mask-n95.png',
       stock: 2000,
       unit: 'pack',
       tierPricing: JSON.stringify([
@@ -199,7 +192,7 @@ async function main() {
       description:
         'Sterile IV infusion set with 20 drops/ml drip chamber. Flexible tube with roller clamp. Sharp piercing spike for easy bottle penetration.',
       category: 'iv_sets',
-      imageUrl: imgEquipment,
+      imageUrl: '/products/iv-set.png',
       stock: 600,
       unit: 'box',
       tierPricing: JSON.stringify([
@@ -224,7 +217,7 @@ async function main() {
       description:
         'Absorbent sterile cotton gauze rolls. Soft, lint-free, highly absorbent. Ideal for wound dressing and surgical procedures.',
       category: 'gauze',
-      imageUrl: imgConsumables,
+      imageUrl: '/products/gauze.png',
       stock: 1500,
       unit: 'box',
       tierPricing: JSON.stringify([
@@ -248,7 +241,7 @@ async function main() {
       description:
         'Complete PPE kit including coverall, shoe covers, head cover, face shield, and gloves. Waterproof and breathable fabric.',
       category: 'ppe_kits',
-      imageUrl: imgEquipment,
+      imageUrl: '/products/ppe-kit.png',
       stock: 300,
       unit: 'kit',
       tierPricing: JSON.stringify([
@@ -272,7 +265,7 @@ async function main() {
       description:
         'Highly absorbent non-sterile cotton roll. Soft texture, low lint. Suitable for general medical use, padding, and wound care preparation.',
       category: 'cotton',
-      imageUrl: imgConsumablesAlt,
+      imageUrl: '/products/cotton-roll.png',
       stock: 2000,
       unit: 'roll',
       tierPricing: JSON.stringify([
@@ -296,7 +289,7 @@ async function main() {
       description:
         'Alcohol-based hand sanitizer (70% IPA). Fast-acting, broad-spectrum antimicrobial. With moisturizer to prevent skin dryness.',
       category: 'hand_sanitizers',
-      imageUrl: imgConsumables,
+      imageUrl: '/products/sanitizer.png',
       stock: 800,
       unit: 'bottle',
       tierPricing: JSON.stringify([
