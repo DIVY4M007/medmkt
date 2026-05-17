@@ -2,7 +2,4 @@
 set -e
 
 echo ">>> Starting MedMkt server on port ${PORT:-10000}..."
-export HOSTNAME="0.0.0.0"
-export PORT="${PORT:-10000}"
-cd .next/standalone
-node server.js
+npx next start -p ${PORT:-10000} -H 0.0.0.0

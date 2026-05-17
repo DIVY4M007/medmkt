@@ -17,5 +17,3 @@ services:
         value: file:./db/production.db
       - key: PORT
         value: 10000
-      - key: HOSTNAME
-        value: 0.0.0.0
