@@ -195,7 +195,7 @@ export default function CartPage() {
         </h1>
         <Button
           variant="outline"
-          className="border-border text-muted-foreground hover:bg-secondary gap-1.5 rounded-lg"
+          className="border-border text-foreground hover:text-primary hover:bg-primary/10 gap-1.5 rounded-lg"
           onClick={() => navigate('cart-upload')}
           data-testid="bulk-upload-btn"
         >

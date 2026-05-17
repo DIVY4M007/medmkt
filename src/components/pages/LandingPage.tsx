@@ -70,7 +70,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
-              className="text-muted-foreground hover:text-foreground btn-press"
+              className="text-muted-foreground btn-press"
               data-testid="nav-signin"
               onClick={() => navigate('login-portal')}
             >
@@ -121,7 +121,7 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-border text-foreground hover:bg-secondary rounded-lg btn-press"
+                  className="border-border text-foreground rounded-lg btn-press"
                   data-testid="hero-signin"
                   onClick={() => navigate('login-portal')}
                 >

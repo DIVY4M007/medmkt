@@ -21,7 +21,6 @@ import {
   Tag,
   ChevronDown,
   ChevronUp,
-  Filter,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -131,7 +130,6 @@ export default function CartUploadPage() {
   const [expandedList, setExpandedList] = useState<string | null>(null);
   const [addingListId, setAddingListId] = useState<string | null>(null);
   const [showDiscountOnly, setShowDiscountOnly] = useState(false);
-  const [showUpload, setShowUpload] = useState(false);
 
   /* ---- Fetch products for matching ---- */
   const fetchProducts = useCallback(async () => {
@@ -600,95 +598,87 @@ export default function CartUploadPage() {
             )}
           </div>
 
-          {/* Divider with upload toggle */}
-          <div className="relative py-4">
+          {/* Divider */}
+          <div className="relative py-2">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center">
-              <button
-                onClick={() => setShowUpload(!showUpload)}
-                className="flex items-center gap-2 bg-background px-4 text-sm text-muted-foreground hover:text-primary transition-colors"
-                data-testid="toggle-upload"
-              >
-                <FileSpreadsheet className="size-4" />
-                {showUpload ? 'Hide Excel upload' : 'Or upload your own spreadsheet'}
-                {showUpload ? <ChevronUp className="size-3" /> : <ChevronDown className="size-3" />}
-              </button>
+              <span className="bg-background px-4 text-xs text-muted-foreground uppercase tracking-wider font-medium">
+                or
+              </span>
             </div>
           </div>
 
-          {/* Excel upload section (collapsible) */}
-          {showUpload && (
-            <div className="space-y-4 animate-fade-in-up">
-              {/* File upload zone */}
-              <div
-                className="bg-card rounded-xl border-2 border-dashed border-border hover:border-primary/40 transition-colors p-10 flex flex-col items-center gap-4 cursor-pointer"
-                onClick={() => document.getElementById('excel-upload')?.click()}
-                data-testid="upload-zone"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="size-10 text-primary animate-spin" />
-                    <p className="text-sm text-muted-foreground">Parsing your file...</p>
-                  </>
-                ) : (
-                  <>
-                    <div className="size-14 rounded-full bg-secondary flex items-center justify-center">
-                      <Upload className="size-6 text-primary" />
-                    </div>
-                    <div className="text-center">
-                      <p className="text-sm font-medium text-foreground mb-1">
-                        Click to upload or drag & drop
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Supports .xlsx, .xls, and .csv files
-                      </p>
-                    </div>
-                  </>
-                )}
-                <Input
-                  id="excel-upload"
-                  type="file"
-                  accept=".xlsx,.xls,.csv"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  data-testid="file-input"
-                />
-              </div>
+          {/* Excel upload section (always visible) */}
+          <div className="space-y-4">
+            {/* File upload zone */}
+            <div
+              className="bg-card rounded-xl border-2 border-dashed border-border hover:border-primary/40 transition-colors p-10 flex flex-col items-center gap-4 cursor-pointer"
+              onClick={() => document.getElementById('excel-upload')?.click()}
+              data-testid="upload-zone"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="size-10 text-primary animate-spin" />
+                  <p className="text-sm text-muted-foreground">Parsing your file...</p>
+                </>
+              ) : (
+                <>
+                  <div className="size-14 rounded-full bg-secondary flex items-center justify-center">
+                    <Upload className="size-6 text-primary" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-foreground mb-1">
+                      Upload from Excel sheet
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Supports .xlsx, .xls, and .csv files
+                    </p>
+                  </div>
+                </>
+              )}
+              <Input
+                id="excel-upload"
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                onChange={handleFileUpload}
+                className="hidden"
+                data-testid="file-input"
+              />
+            </div>
 
-              {/* Format guide */}
-              <div className="bg-secondary rounded-xl border border-border p-5">
-                <p className="text-sm font-medium text-foreground mb-2">Expected format</p>
-                <p className="text-xs text-muted-foreground mb-3">
-                  Your spreadsheet should have these column headers in the first row:
-                </p>
-                <div className="bg-card rounded-lg border border-border overflow-hidden">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="bg-secondary">
-                        <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Column</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Description</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Example</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-t border-border">
-                        <td className="px-4 py-2 font-medium text-foreground">Product Name</td>
-                        <td className="px-4 py-2 text-muted-foreground">Name of the product (partial match supported)</td>
-                        <td className="px-4 py-2 text-muted-foreground">Surgical Gloves</td>
-                      </tr>
-                      <tr className="border-t border-border">
-                        <td className="px-4 py-2 font-medium text-foreground">Quantity</td>
-                        <td className="px-4 py-2 text-muted-foreground">Number of units to order</td>
-                        <td className="px-4 py-2 text-muted-foreground">10</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+            {/* Format guide */}
+            <div className="bg-secondary rounded-xl border border-border p-5">
+              <p className="text-sm font-medium text-foreground mb-2">Expected format</p>
+              <p className="text-xs text-muted-foreground mb-3">
+                Your spreadsheet should have these column headers in the first row:
+              </p>
+              <div className="bg-card rounded-lg border border-border overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-secondary">
+                      <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Column</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Description</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Example</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-t border-border">
+                      <td className="px-4 py-2 font-medium text-foreground">Product Name</td>
+                      <td className="px-4 py-2 text-muted-foreground">Name of the product (partial match supported)</td>
+                      <td className="px-4 py-2 text-muted-foreground">Surgical Gloves</td>
+                    </tr>
+                    <tr className="border-t border-border">
+                      <td className="px-4 py-2 font-medium text-foreground">Quantity</td>
+                      <td className="px-4 py-2 text-muted-foreground">Number of units to order</td>
+                      <td className="px-4 py-2 text-muted-foreground">10</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
-          )}
+          </div>
         </div>
       )}
 

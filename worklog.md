@@ -51,3 +51,20 @@ Stage Summary:
 - Seller can set discount % and minimum order quantity per product
 - Cart automatically applies discounts when minimum quantity is met
 - Cart displays per-item discount info and total savings
+
+---
+Task ID: 1
+Agent: main
+Task: Fix Sign In button hover visibility - both ghost and outline variants turn white on hover
+
+Work Log:
+- Diagnosed root cause: button.tsx ghost/outline variants used `hover:bg-accent hover:text-accent-foreground` which in light mode gives `#7A6452` background + `#FFFFFF` white text, but Tailwind v4 CSS specificity caused the white text to win over custom overrides
+- Fixed button.tsx ghost variant: `hover:bg-accent hover:text-accent-foreground` → `hover:bg-accent/10 hover:text-accent dark:hover:bg-accent/20 dark:hover:text-accent-foreground`
+- Fixed button.tsx outline variant: `hover:bg-accent hover:text-accent-foreground` → `hover:bg-accent/10 hover:text-accent dark:hover:bg-accent/20 dark:hover:text-accent-foreground`
+- Removed conflicting custom hover classes from LandingPage.tsx nav and hero "Sign in" buttons
+- Verified Excel upload feature already exists in CartUploadPage.tsx (no template download needed)
+
+Stage Summary:
+- Sign In button hover now shows subtle brown tint background + brown text (visible) in light mode
+- Dark mode hover also properly styled with subtle accent tint + dark foreground text
+- No template download provided - Excel upload shows format guide only
